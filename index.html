@@ -325,120 +325,171 @@
         resize();
         window.addEventListener('resize', resize);
 
-        // ====== Hello Kitty 蝴蝶结：倾斜椭圆 + 流动弧光 ======
-        var bowParts = [];
+        // ====== Hello Kitty 蝴蝶结：单条连续 figure-8 发光线 ======
+        function sampleCubic(x0, y0, cx1, cy1, cx2, cy2, x3, y3, n) {
+            var pts = [];
+            for (var i = 0; i <= n; i++) {
+                var t = i / n, u = 1 - t;
+                pts.push({
+                    x: u*u*u*x0 + 3*u*u*t*cx1 + 3*u*t*t*cx2 + t*t*t*x3,
+                    y: u*u*u*y0 + 3*u*u*t*cy1 + 3*u*t*t*cy2 + t*t*t*y3
+                });
+            }
+            return pts;
+        }
+
+        var bowPath = [];
+        var bowSegLens = [];
+        var bowTotalLen = 0;
+        var bowCx = 0, bowCy = 0;
+        var bowKnot = { x: 0, y: 0, rx: 0, ry: 0, rot: 0 };
 
         function generateBow() {
             var cx = W / 2;
             var cy = H / 2 - H * 0.05;
-            var unit = Math.min(W, H) * 0.22;
-            var tilt = -0.3; // 整体倾斜角度 (~17度)
+            var s = Math.min(W, H) * 0.32;
+            var tilt = -0.25;
 
-            // 先算未倾斜的位置，再统一旋转
-            var rawParts = [
-                { ox: -unit * 0.95, oy: 0, rx: unit * 1.2, ry: unit * 0.85, localRot: -0.18, isKnot: false },
-                { ox: unit * 0.95, oy: 0, rx: unit * 1.2, ry: unit * 0.85, localRot: 0.18, isKnot: false },
-                { ox: 0, oy: 0, rx: unit * 0.35, ry: unit * 0.42, localRot: 0, isKnot: true }
+            bowCx = cx; bowCy = cy;
+
+            // 蝴蝶结路径：figure-8（中心→左翼→中心→右翼→中心）
+            // 每个翼是泪滴形：内侧尖（靠近中心），外侧圆
+            var segs = [
+                // 左翼上半弧：中心 → 左端
+                [0,0,  -0.06,-0.44,  -0.58,-0.52,  -0.80,0],
+                // 左翼下半弧：左端 → 中心
+                [-0.80,0,  -0.58,0.52,  -0.06,0.44,  0,0],
+                // 右翼下半弧：中心 → 右端
+                [0,0,  0.06,0.44,  0.58,0.52,  0.80,0],
+                // 右翼上半弧：右端 → 中心
+                [0.80,0,  0.58,-0.52,  0.06,-0.44,  0,0]
             ];
 
-            bowParts = [];
-            for (var i = 0; i < rawParts.length; i++) {
-                var r = rawParts[i];
-                // 绕中心旋转位置
-                var rx2 = r.ox * Math.cos(tilt) - r.oy * Math.sin(tilt);
-                var ry2 = r.ox * Math.sin(tilt) + r.oy * Math.cos(tilt);
-                bowParts.push({
-                    cx: cx + rx2,
-                    cy: cy + ry2,
-                    rx: r.rx,
-                    ry: r.ry,
-                    rot: r.localRot + tilt,
-                    isKnot: r.isKnot
-                });
+            function rot(px, py) {
+                return {
+                    x: cx + (px * Math.cos(tilt) - py * Math.sin(tilt)) * s,
+                    y: cy + (px * Math.sin(tilt) + py * Math.cos(tilt)) * s
+                };
             }
+
+            bowPath = [];
+            for (var i = 0; i < segs.length; i++) {
+                var g = segs[i];
+                var p0 = rot(g[0],g[1]), p1 = rot(g[2],g[3]), p2 = rot(g[4],g[5]), p3 = rot(g[6],g[7]);
+                var pts = sampleCubic(p0.x,p0.y, p1.x,p1.y, p2.x,p2.y, p3.x,p3.y, 50);
+                bowPath = bowPath.concat(i === 0 ? pts : pts.slice(1));
+            }
+
+            bowSegLens = [];
+            bowTotalLen = 0;
+            for (var i = 1; i < bowPath.length; i++) {
+                var dx = bowPath[i].x - bowPath[i-1].x;
+                var dy = bowPath[i].y - bowPath[i-1].y;
+                var l = Math.sqrt(dx*dx + dy*dy);
+                bowSegLens.push(l);
+                bowTotalLen += l;
+            }
+
+            var kc = rot(0, 0);
+            bowKnot = { x: kc.x, y: kc.y, rx: s * 0.1, ry: s * 0.13, rot: tilt };
         }
 
         generateBow();
-        window.addEventListener('resize', function() {
-            resize();
-            generateBow();
-        });
+        window.addEventListener('resize', function() { resize(); generateBow(); });
 
-        function ellipsePoint(part, angle) {
-            var ux = Math.cos(angle) * part.rx;
-            var uy = Math.sin(angle) * part.ry;
-            return {
-                x: part.cx + ux * Math.cos(part.rot) - uy * Math.sin(part.rot),
-                y: part.cy + ux * Math.sin(part.rot) + uy * Math.cos(part.rot)
-            };
+        function getPathPt(t) {
+            t = ((t % 1) + 1) % 1;
+            var target = t * bowTotalLen;
+            for (var i = 0; i < bowSegLens.length; i++) {
+                if (target <= bowSegLens[i]) {
+                    var r = bowSegLens[i] > 0 ? target / bowSegLens[i] : 0;
+                    return {
+                        x: bowPath[i].x + (bowPath[i+1].x - bowPath[i].x) * r,
+                        y: bowPath[i].y + (bowPath[i+1].y - bowPath[i].y) * r
+                    };
+                }
+                target -= bowSegLens[i];
+            }
+            return bowPath[bowPath.length - 1];
+        }
+
+        // 画一段路径（从 t1 到 t2）
+        function strokeSegment(t1, t2, color, width) {
+            var steps = 30;
+            ctx.beginPath();
+            var p = getPathPt(t1);
+            ctx.moveTo(p.x, p.y);
+            for (var i = 1; i <= steps; i++) {
+                p = getPathPt(t1 + (t2 - t1) * i / steps);
+                ctx.lineTo(p.x, p.y);
+            }
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.stroke();
         }
 
         function drawFrame(time) {
             ctx.clearRect(0, 0, W, H);
 
-            var bcx = W / 2, bcy = H / 2 - H * 0.05;
-            var bdist = Math.sqrt((mouseX - bcx) * (mouseX - bcx) + (mouseY - bcy) * (mouseY - bcy));
+            var bdist = Math.sqrt((mouseX - bowCx)*(mouseX - bowCx) + (mouseY - bowCy)*(mouseY - bowCy));
             var bprox = Math.max(0, 1 - bdist / (Math.min(W, H) * 0.5));
 
             ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
 
-            for (var p = 0; p < bowParts.length; p++) {
-                var part = bowParts[p];
-
-                // 基础轮廓描边
-                ctx.beginPath();
-                ctx.ellipse(part.cx, part.cy, part.rx, part.ry, part.rot, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(150, 130, 200, ' + (0.07 + bprox * 0.04) + ')';
-                ctx.lineWidth = part.isKnot ? 1.2 : 1.8;
-                ctx.stroke();
-
-                // 极淡填充
-                ctx.beginPath();
-                ctx.ellipse(part.cx, part.cy, part.rx, part.ry, part.rot, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(140, 120, 190, ' + (0.015 + bprox * 0.008) + ')';
-                ctx.fill();
-
-                // 流动弧光
-                var numGlows = part.isKnot ? 1 : 2;
-                for (var g = 0; g < numGlows; g++) {
-                    var speed = part.isKnot ? 0.0003 : 0.00018;
-                    var baseAngle = time * speed + g * Math.PI + p * 2.2;
-
-                    // 光尾 (长弧，淡)
-                    ctx.beginPath();
-                    ctx.ellipse(part.cx, part.cy, part.rx, part.ry, part.rot, baseAngle - Math.PI * 0.45, baseAngle);
-                    ctx.strokeStyle = 'rgba(165, 148, 225, ' + (0.08 + bprox * 0.06) + ')';
-                    ctx.lineWidth = part.isKnot ? 2 : 2.5;
-                    ctx.stroke();
-
-                    // 光体 (中弧，亮)
-                    ctx.beginPath();
-                    ctx.ellipse(part.cx, part.cy, part.rx, part.ry, part.rot, baseAngle - Math.PI * 0.18, baseAngle);
-                    ctx.strokeStyle = 'rgba(180, 163, 238, ' + (0.18 + bprox * 0.12) + ')';
-                    ctx.lineWidth = part.isKnot ? 2.5 : 3;
-                    ctx.stroke();
-
-                    // 光头 (短弧，最亮)
-                    ctx.beginPath();
-                    ctx.ellipse(part.cx, part.cy, part.rx, part.ry, part.rot, baseAngle - Math.PI * 0.05, baseAngle);
-                    ctx.strokeStyle = 'rgba(200, 185, 248, ' + (0.3 + bprox * 0.2) + ')';
-                    ctx.lineWidth = part.isKnot ? 3 : 3.5;
-                    ctx.stroke();
-
-                    // 头部亮点 + 光晕
-                    var head = ellipsePoint(part, baseAngle);
-
-                    ctx.beginPath();
-                    ctx.arc(head.x, head.y, 3, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(210, 195, 252, ' + (0.4 + bprox * 0.2) + ')';
-                    ctx.fill();
-
-                    ctx.beginPath();
-                    ctx.arc(head.x, head.y, 14, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(160, 140, 220, 0.035)';
-                    ctx.fill();
-                }
+            // 基础轮廓
+            ctx.beginPath();
+            ctx.moveTo(bowPath[0].x, bowPath[0].y);
+            for (var i = 1; i < bowPath.length; i++) {
+                ctx.lineTo(bowPath[i].x, bowPath[i].y);
             }
+            ctx.strokeStyle = 'rgba(150, 130, 200, ' + (0.06 + bprox * 0.03) + ')';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // 中心结
+            ctx.beginPath();
+            ctx.ellipse(bowKnot.x, bowKnot.y, bowKnot.rx, bowKnot.ry, bowKnot.rot, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(140, 120, 190, ' + (0.025 + bprox * 0.015) + ')';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(155, 135, 205, ' + (0.08 + bprox * 0.04) + ')';
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+
+            // 单条流动发光线（三层渐变：尾→体→头）
+            var headT = (time * 0.00012) % 1;
+            var glowLen = 0.14;
+
+            // 尾（长、淡）
+            strokeSegment(
+                headT - glowLen, headT,
+                'rgba(165, 148, 225, ' + (0.07 + bprox * 0.05) + ')',
+                2
+            );
+            // 体（中等）
+            strokeSegment(
+                headT - glowLen * 0.4, headT,
+                'rgba(180, 163, 238, ' + (0.16 + bprox * 0.10) + ')',
+                2.5
+            );
+            // 头（短、亮）
+            strokeSegment(
+                headT - glowLen * 0.12, headT,
+                'rgba(200, 185, 248, ' + (0.28 + bprox * 0.18) + ')',
+                3
+            );
+
+            // 头部亮点 + 光晕
+            var head = getPathPt(headT);
+            ctx.beginPath();
+            ctx.arc(head.x, head.y, 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(210, 195, 252, ' + (0.45 + bprox * 0.2) + ')';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(head.x, head.y, 16, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(160, 140, 220, 0.035)';
+            ctx.fill();
 
             requestAnimationFrame(drawFrame);
         }
