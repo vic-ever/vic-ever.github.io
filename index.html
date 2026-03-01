@@ -108,6 +108,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            padding-bottom: 8vh;
             user-select: none;
         }
 
@@ -160,10 +161,15 @@
             font-size: clamp(3rem, 10vw, 7.5rem);
             font-weight: 700;
             letter-spacing: -0.03em;
-            color: rgba(215, 200, 240, 0.95);
             opacity: 0;
             transform: translateY(20px);
+            background: linear-gradient(90deg, rgba(215,200,245,0.95), rgba(160,120,230,0.9), rgba(240,235,255,0.95), rgba(140,100,220,0.9), rgba(215,200,245,0.95));
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards,
+                       nameShift 8s ease-in-out 1.6s infinite,
                        nameGlow 4s ease-in-out 1.6s infinite;
         }
 
@@ -174,17 +180,19 @@
             }
         }
 
+        @keyframes nameShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
         @keyframes nameGlow {
             0%, 100% {
-                text-shadow:
-                    0 0 20px rgba(130, 80, 210, 0.15),
-                    0 0 60px rgba(110, 60, 190, 0.08);
+                filter: drop-shadow(0 0 15px rgba(130, 80, 210, 0.15))
+                        drop-shadow(0 0 50px rgba(110, 60, 190, 0.06));
             }
             50% {
-                text-shadow:
-                    0 0 30px rgba(140, 90, 220, 0.3),
-                    0 0 80px rgba(120, 70, 200, 0.15),
-                    0 0 120px rgba(100, 50, 180, 0.08);
+                filter: drop-shadow(0 0 25px rgba(140, 90, 220, 0.3))
+                        drop-shadow(0 0 70px rgba(120, 70, 200, 0.12));
             }
         }
 
@@ -367,17 +375,22 @@
                 });
             }
 
-            // 预计算路径长度
+            // 预计算路径长度和每段长度
             for (var ci = 0; ci < circuits.length; ci++) {
                 var p = circuits[ci].path;
                 var len = 0;
+                var sLens = [];
                 for (var j = 1; j < p.length; j++) {
-                    len += Math.abs(p[j].x - p[j - 1].x) + Math.abs(p[j].y - p[j - 1].y);
+                    var sLen = Math.abs(p[j].x - p[j - 1].x) + Math.abs(p[j].y - p[j - 1].y);
+                    sLens.push(sLen);
+                    len += sLen;
                 }
                 circuits[ci].totalLen = len;
+                circuits[ci].segLens = sLens;
             }
         }
 
+        // 计算路径上某个 t(0~1) 对应的累计距离
         function getPointOnPath(path, totalLen, t) {
             var target = t * totalLen;
             for (var i = 1; i < path.length; i++) {
@@ -394,9 +407,62 @@
             return path[path.length - 1];
         }
 
-        // 灯带采样点数
-        var TRAIL_STEPS = 16;
-        var TRAIL_LENGTH = 0.18;  // 灯带占路径总长的比例
+        // 获取路径上 t 值对应的段索引和段内比例
+        function getSegmentAt(path, segLens, totalLen, t) {
+            var target = t * totalLen;
+            for (var i = 0; i < segLens.length; i++) {
+                if (target <= segLens[i]) {
+                    var ratio = segLens[i] > 0 ? target / segLens[i] : 0;
+                    return { seg: i, ratio: ratio };
+                }
+                target -= segLens[i];
+            }
+            return { seg: segLens.length - 1, ratio: 1 };
+        }
+
+        // 在两个 t 值间裁剪路径并描边（发光线段效果）
+        function strokeGlowSegment(path, segLens, totalLen, tStart, tEnd, alpha, width, proximity) {
+            if (tStart >= tEnd) return;
+
+            var startInfo = getSegmentAt(path, segLens, totalLen, tStart);
+            var endInfo = getSegmentAt(path, segLens, totalLen, tEnd);
+
+            ctx.beginPath();
+
+            // 起点
+            var sx = path[startInfo.seg].x + (path[startInfo.seg + 1].x - path[startInfo.seg].x) * startInfo.ratio;
+            var sy = path[startInfo.seg].y + (path[startInfo.seg + 1].y - path[startInfo.seg].y) * startInfo.ratio;
+            ctx.moveTo(sx, sy);
+
+            // 中间完整段的端点
+            for (var i = startInfo.seg + 1; i <= endInfo.seg; i++) {
+                ctx.lineTo(path[i].x, path[i].y);
+            }
+
+            // 终点
+            var ex = path[endInfo.seg].x + (path[endInfo.seg + 1].x - path[endInfo.seg].x) * endInfo.ratio;
+            var ey = path[endInfo.seg].y + (path[endInfo.seg + 1].y - path[endInfo.seg].y) * endInfo.ratio;
+            ctx.lineTo(ex, ey);
+
+            ctx.strokeStyle = 'rgba(160, 120, 255, ' + alpha + ')';
+            ctx.lineWidth = width;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // 头部光点
+            ctx.beginPath();
+            ctx.arc(ex, ey, 2.5 + proximity * 2, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(180, 150, 255, ' + (alpha * 0.8) + ')';
+            ctx.fill();
+
+            // 头部光晕
+            ctx.beginPath();
+            ctx.arc(ex, ey, 8 + proximity * 8, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(140, 100, 240, ' + (alpha * 0.1) + ')';
+            ctx.fill();
+        }
+
+        var GLOW_LENGTH = 0.2;  // 发光段占路径总长比例
 
         function drawCircuit(time) {
             ctx.clearRect(0, 0, W, H);
@@ -411,7 +477,7 @@
                 var dist = Math.sqrt(dx * dx + dy * dy);
                 var proximity = Math.max(0, 1 - dist / 350);
 
-                // 路径线
+                // 基础暗线
                 ctx.beginPath();
                 ctx.moveTo(path[0].x, path[0].y);
                 for (var i = 1; i < path.length; i++) {
@@ -419,7 +485,8 @@
                 }
                 var lineAlpha = c.baseAlpha + proximity * 0.18;
                 ctx.strokeStyle = 'rgba(110, 70, 190, ' + lineAlpha + ')';
-                ctx.lineWidth = 0.6 + proximity * 0.8;
+                ctx.lineWidth = 0.6 + proximity * 0.6;
+                ctx.lineCap = 'round';
                 ctx.stroke();
 
                 // 节点
@@ -435,34 +502,19 @@
                     }
                 }
 
-                // 灯带效果：沿路径画一段渐变的光带
+                // 发光线段：路径本身的一段变亮
                 var headT = ((time * c.pulseSpeed * 0.001) + c.pulseOffset) % 1;
+                var tailT = headT - GLOW_LENGTH;
 
-                for (var s = 0; s < TRAIL_STEPS; s++) {
-                    var ratio = s / TRAIL_STEPS;  // 0=头部, 1=尾部
-                    var sampleT = headT - ratio * TRAIL_LENGTH;
+                var glowAlpha = 0.25 + proximity * 0.45;
+                var glowWidth = 1.5 + proximity * 1.5;
 
-                    // 循环
-                    if (sampleT < 0) sampleT += 1;
-
-                    var pt2 = getPointOnPath(path, c.totalLen, sampleT);
-                    var fade = 1 - ratio;  // 头部最亮，尾部消失
-                    fade = fade * fade;    // 二次衰减，更自然
-                    var trailAlpha = fade * (0.35 + proximity * 0.5);
-                    var trailSize = 1.5 + fade * (2 + proximity * 2);
-
-                    ctx.beginPath();
-                    ctx.arc(pt2.x, pt2.y, trailSize, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(160, 120, 255, ' + trailAlpha + ')';
-                    ctx.fill();
-
-                    // 头部发光
-                    if (s === 0) {
-                        ctx.beginPath();
-                        ctx.arc(pt2.x, pt2.y, 6 + proximity * 6, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(140, 100, 240, ' + (trailAlpha * 0.15) + ')';
-                        ctx.fill();
-                    }
+                if (tailT >= 0) {
+                    strokeGlowSegment(path, c.segLens, c.totalLen, tailT, headT, glowAlpha, glowWidth, proximity);
+                } else {
+                    // 跨越起点时分两段画
+                    strokeGlowSegment(path, c.segLens, c.totalLen, 0, headT, glowAlpha, glowWidth, proximity);
+                    strokeGlowSegment(path, c.segLens, c.totalLen, 1 + tailT, 1, glowAlpha, glowWidth, proximity);
                 }
             }
 
