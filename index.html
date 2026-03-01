@@ -317,332 +317,136 @@
         var canvas = document.getElementById('circuit');
         var ctx = canvas.getContext('2d');
         var W, H;
-        var circuits = [];
 
         function resize() {
             W = canvas.width = window.innerWidth;
             H = canvas.height = window.innerHeight;
-            generateCircuits();
         }
         resize();
         window.addEventListener('resize', resize);
 
-        function generateCircuits() {
-            circuits = [];
-            var count = Math.floor((W * H) / 10000);
-
-            for (var i = 0; i < count; i++) {
-                var path = [];
-                var x = Math.random() * W;
-                var y = Math.random() * H;
-                path.push({ x: x, y: y });
-
-                var segments = 3 + Math.floor(Math.random() * 6);
-                var dir = Math.random() < 0.5 ? 'h' : 'v';
-
-                for (var s = 0; s < segments; s++) {
-                    var len = 30 + Math.random() * 120;
-                    if (dir === 'h') {
-                        x += (Math.random() < 0.5 ? -1 : 1) * len;
-                    } else {
-                        y += (Math.random() < 0.5 ? -1 : 1) * len;
-                    }
-                    path.push({ x: x, y: y });
-                    dir = dir === 'h' ? 'v' : 'h';
-                }
-
-                circuits.push({
-                    path: path,
-                    pulseOffset: Math.random() * 1000,
-                    pulseSpeed: 0.08 + Math.random() * 0.12,
-                    baseAlpha: 0.05 + Math.random() * 0.06,
-                    totalLen: 0
-                });
-            }
-
-            for (var ci = 0; ci < circuits.length; ci++) {
-                var p = circuits[ci].path;
-                var len = 0;
-                var sLens = [];
-                for (var j = 1; j < p.length; j++) {
-                    var sLen = Math.abs(p[j].x - p[j - 1].x) + Math.abs(p[j].y - p[j - 1].y);
-                    sLens.push(sLen);
-                    len += sLen;
-                }
-                circuits[ci].totalLen = len;
-                circuits[ci].segLens = sLens;
-            }
-        }
-
-        function getPointOnPath(path, totalLen, t) {
-            var target = t * totalLen;
-            for (var i = 1; i < path.length; i++) {
-                var segLen = Math.abs(path[i].x - path[i - 1].x) + Math.abs(path[i].y - path[i - 1].y);
-                if (target <= segLen) {
-                    var ratio = segLen > 0 ? target / segLen : 0;
-                    return {
-                        x: path[i - 1].x + (path[i].x - path[i - 1].x) * ratio,
-                        y: path[i - 1].y + (path[i].y - path[i - 1].y) * ratio
-                    };
-                }
-                target -= segLen;
-            }
-            return path[path.length - 1];
-        }
-
-        function getSegmentAt(path, segLens, totalLen, t) {
-            var target = t * totalLen;
-            for (var i = 0; i < segLens.length; i++) {
-                if (target <= segLens[i]) {
-                    var ratio = segLens[i] > 0 ? target / segLens[i] : 0;
-                    return { seg: i, ratio: ratio };
-                }
-                target -= segLens[i];
-            }
-            return { seg: segLens.length - 1, ratio: 1 };
-        }
-
-        function strokeGlowSegment(path, segLens, totalLen, tStart, tEnd, alpha, width, proximity) {
-            if (tStart >= tEnd) return;
-
-            var startInfo = getSegmentAt(path, segLens, totalLen, tStart);
-            var endInfo = getSegmentAt(path, segLens, totalLen, tEnd);
-
-            ctx.beginPath();
-
-            var sx = path[startInfo.seg].x + (path[startInfo.seg + 1].x - path[startInfo.seg].x) * startInfo.ratio;
-            var sy = path[startInfo.seg].y + (path[startInfo.seg + 1].y - path[startInfo.seg].y) * startInfo.ratio;
-            ctx.moveTo(sx, sy);
-
-            for (var i = startInfo.seg + 1; i <= endInfo.seg; i++) {
-                ctx.lineTo(path[i].x, path[i].y);
-            }
-
-            var ex = path[endInfo.seg].x + (path[endInfo.seg + 1].x - path[endInfo.seg].x) * endInfo.ratio;
-            var ey = path[endInfo.seg].y + (path[endInfo.seg + 1].y - path[endInfo.seg].y) * endInfo.ratio;
-            ctx.lineTo(ex, ey);
-
-            ctx.strokeStyle = 'rgba(175, 155, 225, ' + alpha + ')';
-            ctx.lineWidth = width;
-            ctx.lineCap = 'round';
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.arc(ex, ey, 2.5 + proximity * 2, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(195, 178, 240, ' + (alpha * 0.75) + ')';
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.arc(ex, ey, 8 + proximity * 8, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(155, 135, 210, ' + (alpha * 0.09) + ')';
-            ctx.fill();
-        }
-
-        var GLOW_LENGTH = 0.2;
-
-        function drawCircuit(time) {
-            ctx.clearRect(0, 0, W, H);
-
-            for (var ci = 0; ci < circuits.length; ci++) {
-                var c = circuits[ci];
-                var path = c.path;
-
-                var mid = getPointOnPath(path, c.totalLen, 0.5);
-                var dx = mid.x - mouseX;
-                var dy = mid.y - mouseY;
-                var dist = Math.sqrt(dx * dx + dy * dy);
-                var proximity = Math.max(0, 1 - dist / 350);
-
-                ctx.beginPath();
-                ctx.moveTo(path[0].x, path[0].y);
-                for (var i = 1; i < path.length; i++) {
-                    ctx.lineTo(path[i].x, path[i].y);
-                }
-                var lineAlpha = c.baseAlpha + proximity * 0.18;
-                ctx.strokeStyle = 'rgba(130, 115, 180, ' + lineAlpha + ')';
-                ctx.lineWidth = 0.6 + proximity * 0.6;
-                ctx.lineCap = 'round';
-                ctx.stroke();
-
-                for (var j = 0; j < path.length; j++) {
-                    var pt = path[j];
-                    var d = Math.sqrt((pt.x - mouseX) * (pt.x - mouseX) + (pt.y - mouseY) * (pt.y - mouseY));
-                    var p = Math.max(0, 1 - d / 300);
-                    if (c.baseAlpha + p > 0.06) {
-                        ctx.beginPath();
-                        ctx.arc(pt.x, pt.y, 1.5 + p * 2.5, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(160, 142, 215, ' + (c.baseAlpha * 2.5 + p * 0.55) + ')';
-                        ctx.fill();
-                    }
-                }
-
-                var headT = ((time * c.pulseSpeed * 0.001) + c.pulseOffset) % 1;
-                var tailT = headT - GLOW_LENGTH;
-
-                var glowAlpha = 0.25 + proximity * 0.42;
-                var glowWidth = 1.5 + proximity * 1.5;
-
-                if (tailT >= 0) {
-                    strokeGlowSegment(path, c.segLens, c.totalLen, tailT, headT, glowAlpha, glowWidth, proximity);
-                } else {
-                    strokeGlowSegment(path, c.segLens, c.totalLen, 0, headT, glowAlpha, glowWidth, proximity);
-                    strokeGlowSegment(path, c.segLens, c.totalLen, 1 + tailT, 1, glowAlpha, glowWidth, proximity);
-                }
-            }
-
-            // ====== 蝴蝶结 ======
-            drawBow(time);
-
-            requestAnimationFrame(drawCircuit);
-        }
-
-        // 蝴蝶结路径点（归一化 0~1 坐标）
-        var bowPoints = [];
-        var bowTotalLen = 0;
-        var bowSegLens = [];
+        // ====== Hello Kitty 蝴蝶结：三个圆（左翼、右翼、中心结）======
+        // 三个圆的定义
+        var bowCircles = [];
+        var bowPaths = []; // 每个圆的采样点数组
 
         function generateBow() {
-            bowPoints = [];
-            var cx = W * 0.5;
-            var cy = H * 0.48;
-            var scaleX = Math.min(W, H) * 0.32;
-            var scaleY = Math.min(W, H) * 0.2;
-            var steps = 120;
+            var cx = W / 2;
+            var cy = H / 2 - H * 0.05;
+            var s = Math.min(W, H) * 0.28;
 
-            // 左环
-            for (var i = 0; i <= steps / 2; i++) {
-                var t = (i / (steps / 2)) * Math.PI * 2;
-                var r = 0.45 + 0.15 * Math.cos(t * 2);
-                var px = cx - scaleX * r * Math.cos(t) * 0.55;
-                var py = cy + scaleY * r * Math.sin(t) * 0.7;
-                bowPoints.push({ x: px, y: py });
-            }
+            // 左翼圆 - 大圆，向左偏移
+            // 右翼圆 - 大圆，向右偏移
+            // 中心结 - 小圆，居中
+            bowCircles = [
+                { x: cx - s * 0.72, y: cy, r: s * 0.62 },  // 左翼
+                { x: cx + s * 0.72, y: cy, r: s * 0.62 },  // 右翼
+                { x: cx, y: cy, r: s * 0.22 }               // 中心结
+            ];
 
-            // 中心结
-            var knotSteps = 16;
-            for (var i = 0; i <= knotSteps; i++) {
-                var t = (i / knotSteps) * Math.PI * 2;
-                var px = cx + Math.cos(t) * scaleX * 0.06;
-                var py = cy + Math.sin(t) * scaleY * 0.12;
-                bowPoints.push({ x: px, y: py });
-            }
-
-            // 右环
-            for (var i = 0; i <= steps / 2; i++) {
-                var t = (i / (steps / 2)) * Math.PI * 2;
-                var r = 0.45 + 0.15 * Math.cos(t * 2);
-                var px = cx + scaleX * r * Math.cos(t) * 0.55;
-                var py = cy + scaleY * r * Math.sin(t) * 0.7;
-                bowPoints.push({ x: px, y: py });
-            }
-
-            // 飘带左
-            for (var i = 0; i <= 20; i++) {
-                var t = i / 20;
-                var px = cx - scaleX * 0.12 - t * scaleX * 0.25;
-                var py = cy + scaleY * 0.1 + t * scaleY * 0.55 + Math.sin(t * 3) * scaleY * 0.08;
-                bowPoints.push({ x: px, y: py });
-            }
-
-            // 回到中心
-            bowPoints.push({ x: cx, y: cy + scaleY * 0.1 });
-
-            // 飘带右
-            for (var i = 0; i <= 20; i++) {
-                var t = i / 20;
-                var px = cx + scaleX * 0.12 + t * scaleX * 0.25;
-                var py = cy + scaleY * 0.1 + t * scaleY * 0.55 + Math.sin(t * 3) * scaleY * 0.08;
-                bowPoints.push({ x: px, y: py });
-            }
-
-            // 计算段长
-            bowSegLens = [];
-            bowTotalLen = 0;
-            for (var i = 1; i < bowPoints.length; i++) {
-                var dx = bowPoints[i].x - bowPoints[i - 1].x;
-                var dy = bowPoints[i].y - bowPoints[i - 1].y;
-                var sl = Math.sqrt(dx * dx + dy * dy);
-                bowSegLens.push(sl);
-                bowTotalLen += sl;
-            }
-        }
-
-        function getBowPoint(t) {
-            var target = t * bowTotalLen;
-            for (var i = 0; i < bowSegLens.length; i++) {
-                if (target <= bowSegLens[i]) {
-                    var ratio = bowSegLens[i] > 0 ? target / bowSegLens[i] : 0;
-                    return {
-                        x: bowPoints[i].x + (bowPoints[i + 1].x - bowPoints[i].x) * ratio,
-                        y: bowPoints[i].y + (bowPoints[i + 1].y - bowPoints[i].y) * ratio
-                    };
+            // 对每个圆采样成点
+            bowPaths = [];
+            for (var c = 0; c < bowCircles.length; c++) {
+                var circle = bowCircles[c];
+                var n = c < 2 ? 80 : 40; // 大圆更多采样点
+                var pts = [];
+                for (var i = 0; i <= n; i++) {
+                    var a = (i / n) * Math.PI * 2;
+                    pts.push({
+                        x: circle.x + Math.cos(a) * circle.r,
+                        y: circle.y + Math.sin(a) * circle.r
+                    });
                 }
-                target -= bowSegLens[i];
+                bowPaths.push(pts);
             }
-            return bowPoints[bowPoints.length - 1];
         }
 
-        function drawBow(time) {
-            if (bowPoints.length === 0) return;
+        generateBow();
+        window.addEventListener('resize', function() {
+            resize();
+            generateBow();
+        });
 
-            // 基础轮廓
-            ctx.beginPath();
-            ctx.moveTo(bowPoints[0].x, bowPoints[0].y);
-            for (var i = 1; i < bowPoints.length; i++) {
-                ctx.lineTo(bowPoints[i].x, bowPoints[i].y);
-            }
-            ctx.strokeStyle = 'rgba(150, 130, 200, 0.04)';
-            ctx.lineWidth = 1.2;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.stroke();
+        function drawFrame(time) {
+            ctx.clearRect(0, 0, W, H);
 
-            // 流动光效 - 3 条光带沿蝴蝶结跑
-            for (var g = 0; g < 3; g++) {
-                var headT = ((time * 0.06 * 0.001) + g * 0.33) % 1;
-                var trailLen = 0.12;
+            // 鼠标距中心距离 → 亮度增强
+            var bcx = W / 2, bcy = H / 2 - H * 0.05;
+            var bdist = Math.sqrt((mouseX - bcx) * (mouseX - bcx) + (mouseY - bcy) * (mouseY - bcy));
+            var bprox = Math.max(0, 1 - bdist / (Math.min(W, H) * 0.45));
 
-                // 画发光段
-                var steps = 30;
-                for (var s = 0; s < steps; s++) {
-                    var ratio = s / steps;
-                    var sampleT = headT - ratio * trailLen;
-                    if (sampleT < 0) sampleT += 1;
+            // 画每个圆
+            for (var c = 0; c < bowCircles.length; c++) {
+                var circle = bowCircles[c];
+                var pts = bowPaths[c];
 
-                    var pt = getBowPoint(sampleT);
-                    var fade = 1 - ratio;
-                    fade = fade * fade;
-                    var alpha = fade * 0.18;
-                    var size = 1.5 + fade * 2;
+                // 基础轮廓
+                ctx.beginPath();
+                ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(150, 130, 200, ' + (0.06 + bprox * 0.04) + ')';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // 淡填充
+                ctx.beginPath();
+                ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(140, 120, 190, ' + (0.015 + bprox * 0.01) + ')';
+                ctx.fill();
+
+                // 流动光段 - 每个圆2条光
+                for (var g = 0; g < 2; g++) {
+                    var speed = c < 2 ? 0.00008 : 0.00012;
+                    var dir = g === 0 ? 1 : -1;
+                    var offset = g * 0.5;
+                    var headAngle = (dir * time * speed + offset + c * 2.1) % 1;
+                    if (headAngle < 0) headAngle += 1;
+
+                    var trailLen = 0.15;
+                    var steps = 30;
+
+                    // 绘制光尾
+                    ctx.lineCap = 'round';
+                    for (var st = 0; st < steps; st++) {
+                        var ratio = st / steps;
+                        var sampleT = headAngle - dir * ratio * trailLen;
+                        sampleT = ((sampleT % 1) + 1) % 1;
+
+                        var angle = sampleT * Math.PI * 2;
+                        var px = circle.x + Math.cos(angle) * circle.r;
+                        var py = circle.y + Math.sin(angle) * circle.r;
+
+                        var fade = 1 - ratio;
+                        fade = fade * fade;
+                        var alpha = fade * (0.25 + bprox * 0.18);
+                        var size = 1.5 + fade * 3;
+
+                        ctx.beginPath();
+                        ctx.arc(px, py, size, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(175, 158, 235, ' + alpha + ')';
+                        ctx.fill();
+                    }
+
+                    // 头部亮点
+                    var headA = headAngle * Math.PI * 2;
+                    var hx = circle.x + Math.cos(headA) * circle.r;
+                    var hy = circle.y + Math.sin(headA) * circle.r;
 
                     ctx.beginPath();
-                    ctx.arc(pt.x, pt.y, size, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(180, 160, 235, ' + alpha + ')';
+                    ctx.arc(hx, hy, 3.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(195, 178, 245, ' + (0.35 + bprox * 0.2) + ')';
+                    ctx.fill();
+
+                    // 头部光晕
+                    ctx.beginPath();
+                    ctx.arc(hx, hy, 12, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(160, 140, 220, 0.04)';
                     ctx.fill();
                 }
-
-                // 头部光晕
-                var head = getBowPoint(headT);
-                ctx.beginPath();
-                ctx.arc(head.x, head.y, 10, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(165, 145, 220, 0.06)';
-                ctx.fill();
             }
+
+            requestAnimationFrame(drawFrame);
         }
-
-        // 初始化时生成蝴蝶结
-        generateBow();
-        var oldResize = resize;
-        resize = function() {
-            W = canvas.width = window.innerWidth;
-            H = canvas.height = window.innerHeight;
-            generateCircuits();
-            generateBow();
-        };
-        window.removeEventListener('resize', oldResize);
-        window.addEventListener('resize', resize);
-
-        requestAnimationFrame(drawCircuit);
+        requestAnimationFrame(drawFrame);
 
         try {
             var taglineEl = document.getElementById('tagline');
