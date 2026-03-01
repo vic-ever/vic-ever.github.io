@@ -407,7 +407,7 @@
         requestAnimationFrame(drawCircuit);
 
         // ====== 入场动画 ======
-        window.addEventListener('load', () => {
+        function startEntrance() {
             setTimeout(() => {
                 document.getElementById('avatar').classList.add('visible');
             }, 100);
@@ -421,7 +421,13 @@
                 tagline.classList.add('visible');
                 typeWriter(tagline, 'South China University of Technology');
             }, 1400);
-        });
+        }
+
+        if (document.readyState === 'complete') {
+            startEntrance();
+        } else {
+            window.addEventListener('load', startEntrance);
+        }
 
         // ====== 打字机 ======
         function typeWriter(el, text) {
