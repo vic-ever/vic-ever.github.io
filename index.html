@@ -23,11 +23,11 @@
         /* 光标跟随光晕 */
         .glow {
             position: fixed;
-            width: 500px;
-            height: 500px;
+            width: 600px;
+            height: 600px;
             border-radius: 50%;
             pointer-events: none;
-            background: radial-gradient(circle, rgba(40, 120, 170, 0.1) 0%, rgba(60, 100, 180, 0.05) 35%, transparent 70%);
+            background: radial-gradient(circle, rgba(40, 130, 200, 0.15) 0%, rgba(60, 100, 180, 0.07) 35%, transparent 70%);
             transform: translate(-50%, -50%);
             z-index: 3;
         }
@@ -42,6 +42,54 @@
             z-index: 0;
         }
 
+        /* 环境光斑 */
+        .ambient {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(80px);
+        }
+        .ambient-1 {
+            width: 400px;
+            height: 400px;
+            top: 10%;
+            left: 15%;
+            background: rgba(30, 80, 160, 0.06);
+            animation: drift1 20s ease-in-out infinite;
+        }
+        .ambient-2 {
+            width: 350px;
+            height: 350px;
+            bottom: 15%;
+            right: 10%;
+            background: rgba(50, 120, 180, 0.05);
+            animation: drift2 25s ease-in-out infinite;
+        }
+        .ambient-3 {
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            left: 60%;
+            background: rgba(40, 100, 170, 0.04);
+            animation: drift3 18s ease-in-out infinite;
+        }
+
+        @keyframes drift1 {
+            0%, 100% { transform: translate(0, 0); }
+            33% { transform: translate(60px, -40px); }
+            66% { transform: translate(-30px, 50px); }
+        }
+        @keyframes drift2 {
+            0%, 100% { transform: translate(0, 0); }
+            33% { transform: translate(-50px, 30px); }
+            66% { transform: translate(40px, -60px); }
+        }
+        @keyframes drift3 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-70px, -40px); }
+        }
+
         /* 边缘渐隐 */
         .vignette {
             position: fixed;
@@ -52,8 +100,8 @@
             pointer-events: none;
             z-index: 1;
             background:
-                radial-gradient(ellipse at center, transparent 30%, #080b12 85%),
-                linear-gradient(to bottom, #080b12 0%, transparent 12%, transparent 88%, #080b12 100%);
+                radial-gradient(ellipse at center, transparent 35%, #080b12 80%),
+                linear-gradient(to bottom, #080b12 0%, transparent 10%, transparent 90%, #080b12 100%);
         }
 
         /* 主内容 */
@@ -101,7 +149,6 @@
             object-fit: cover;
         }
 
-        /* 占位头像（无照片时） */
         .avatar-placeholder {
             width: 100%;
             height: 100%;
@@ -115,16 +162,16 @@
             letter-spacing: -0.02em;
         }
 
-        /* 名字 */
+        /* 名字 - 呼吸光晕 */
         .name {
             font-size: clamp(3rem, 10vw, 7.5rem);
             font-weight: 700;
             letter-spacing: -0.03em;
-            color: rgba(195, 210, 230, 0.9);
+            color: rgba(200, 220, 240, 0.95);
             opacity: 0;
             transform: translateY(20px);
-            text-shadow: 0 0 60px rgba(50, 120, 180, 0.1);
-            animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+            animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards,
+                       nameGlow 4s ease-in-out 1.6s infinite;
         }
 
         @keyframes fadeUp {
@@ -134,15 +181,29 @@
             }
         }
 
+        @keyframes nameGlow {
+            0%, 100% {
+                text-shadow:
+                    0 0 20px rgba(60, 140, 210, 0.15),
+                    0 0 60px rgba(40, 110, 190, 0.08);
+            }
+            50% {
+                text-shadow:
+                    0 0 30px rgba(60, 150, 220, 0.3),
+                    0 0 80px rgba(40, 120, 200, 0.15),
+                    0 0 120px rgba(30, 100, 180, 0.08);
+            }
+        }
+
         /* tagline */
         .tagline {
             margin-top: 1.2rem;
             font-size: clamp(0.85rem, 1.8vw, 1.05rem);
             font-weight: 300;
-            color: rgba(130, 155, 185, 0.4);
+            color: rgba(130, 155, 185, 0.45);
             letter-spacing: 0.25em;
             text-transform: uppercase;
-            height: 1.5em;
+            min-height: 1.5em;
             opacity: 0;
             animation: fadeIn 1s ease 1.4s forwards;
         }
@@ -211,23 +272,25 @@
             left: 0;
             width: 100%;
             height: 1px;
-            background: linear-gradient(90deg, transparent 0%, rgba(40, 120, 170, 0.15) 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(40, 120, 170, 0.2) 50%, transparent 100%);
             z-index: 10;
         }
     </style>
 </head>
 <body>
     <canvas id="circuit"></canvas>
+    <div class="ambient ambient-1"></div>
+    <div class="ambient ambient-2"></div>
+    <div class="ambient ambient-3"></div>
     <div class="vignette"></div>
     <div class="glow" id="glow"></div>
 
     <div class="main">
         <div class="avatar" id="avatar">
-            <!-- 替换为真实照片: <img src="photo.jpg" alt="SiyueChen"> -->
             <div class="avatar-placeholder">S</div>
         </div>
         <h1 class="name" id="name">SiyueChen</h1>
-        <div class="tagline" id="tagline"></div>
+        <div class="tagline" id="tagline">South China University of Technology</div>
     </div>
 
     <div class="socials">
@@ -246,13 +309,13 @@
 
     <script>
         // ====== 光标跟随 ======
-        const glow = document.getElementById('glow');
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        let glowX = mouseX;
-        let glowY = mouseY;
+        var glow = document.getElementById('glow');
+        var mouseX = window.innerWidth / 2;
+        var mouseY = window.innerHeight / 2;
+        var glowX = mouseX;
+        var glowY = mouseY;
 
-        document.addEventListener('mousemove', e => {
+        document.addEventListener('mousemove', function(e) {
             mouseX = e.clientX;
             mouseY = e.clientY;
         });
@@ -267,9 +330,10 @@
         animateGlow();
 
         // ====== 电路板效果 ======
-        const canvas = document.getElementById('circuit');
-        const ctx = canvas.getContext('2d');
-        let W, H;
+        var canvas = document.getElementById('circuit');
+        var ctx = canvas.getContext('2d');
+        var W, H;
+        var circuits = [];
 
         function resize() {
             W = canvas.width = window.innerWidth;
@@ -279,60 +343,57 @@
         resize();
         window.addEventListener('resize', resize);
 
-        // 电路路径数据
-        let circuits = [];
-
         function generateCircuits() {
             circuits = [];
-            const count = Math.floor((W * H) / 15000);
+            var count = Math.floor((W * H) / 10000);
 
-            for (let i = 0; i < count; i++) {
-                const path = [];
-                let x = Math.random() * W;
-                let y = Math.random() * H;
-                path.push({ x, y });
+            for (var i = 0; i < count; i++) {
+                var path = [];
+                var x = Math.random() * W;
+                var y = Math.random() * H;
+                path.push({ x: x, y: y });
 
-                const segments = 3 + Math.floor(Math.random() * 6);
-                let dir = Math.random() < 0.5 ? 'h' : 'v';
+                var segments = 3 + Math.floor(Math.random() * 6);
+                var dir = Math.random() < 0.5 ? 'h' : 'v';
 
-                for (let s = 0; s < segments; s++) {
-                    const len = 30 + Math.random() * 120;
+                for (var s = 0; s < segments; s++) {
+                    var len = 30 + Math.random() * 120;
                     if (dir === 'h') {
                         x += (Math.random() < 0.5 ? -1 : 1) * len;
                     } else {
                         y += (Math.random() < 0.5 ? -1 : 1) * len;
                     }
-                    path.push({ x, y });
+                    path.push({ x: x, y: y });
                     dir = dir === 'h' ? 'v' : 'h';
                 }
 
                 circuits.push({
-                    path,
+                    path: path,
                     pulseOffset: Math.random() * 1000,
                     pulseSpeed: 0.3 + Math.random() * 0.6,
-                    baseAlpha: 0.03 + Math.random() * 0.04,
+                    baseAlpha: 0.05 + Math.random() * 0.06
                 });
             }
         }
 
         function getPathLength(path) {
-            let len = 0;
-            for (let i = 1; i < path.length; i++) {
+            var len = 0;
+            for (var i = 1; i < path.length; i++) {
                 len += Math.abs(path[i].x - path[i - 1].x) + Math.abs(path[i].y - path[i - 1].y);
             }
             return len;
         }
 
         function getPointOnPath(path, t) {
-            const totalLen = getPathLength(path);
-            let target = t * totalLen;
-            for (let i = 1; i < path.length; i++) {
-                const segLen = Math.abs(path[i].x - path[i - 1].x) + Math.abs(path[i].y - path[i - 1].y);
+            var totalLen = getPathLength(path);
+            var target = t * totalLen;
+            for (var i = 1; i < path.length; i++) {
+                var segLen = Math.abs(path[i].x - path[i - 1].x) + Math.abs(path[i].y - path[i - 1].y);
                 if (target <= segLen) {
-                    const ratio = segLen > 0 ? target / segLen : 0;
+                    var ratio = segLen > 0 ? target / segLen : 0;
                     return {
                         x: path[i - 1].x + (path[i].x - path[i - 1].x) * ratio,
-                        y: path[i - 1].y + (path[i].y - path[i - 1].y) * ratio,
+                        y: path[i - 1].y + (path[i].y - path[i - 1].y) * ratio
                     };
                 }
                 target -= segLen;
@@ -343,85 +404,91 @@
         function drawCircuit(time) {
             ctx.clearRect(0, 0, W, H);
 
-            circuits.forEach(c => {
-                const { path, pulseOffset, pulseSpeed, baseAlpha } = c;
+            for (var ci = 0; ci < circuits.length; ci++) {
+                var c = circuits[ci];
+                var path = c.path;
 
-                // 计算路径中点到鼠标距离 -> 接近时变亮
-                const mid = getPointOnPath(path, 0.5);
-                const dist = Math.sqrt((mid.x - mouseX) ** 2 + (mid.y - mouseY) ** 2);
-                const proximity = Math.max(0, 1 - dist / 300);
+                var mid = getPointOnPath(path, 0.5);
+                var dx = mid.x - mouseX;
+                var dy = mid.y - mouseY;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                var proximity = Math.max(0, 1 - dist / 350);
 
-                // 绘制路径线
+                // 路径线
                 ctx.beginPath();
                 ctx.moveTo(path[0].x, path[0].y);
-                for (let i = 1; i < path.length; i++) {
+                for (var i = 1; i < path.length; i++) {
                     ctx.lineTo(path[i].x, path[i].y);
                 }
-                const lineAlpha = baseAlpha + proximity * 0.15;
-                ctx.strokeStyle = `rgba(60, 140, 200, ${lineAlpha})`;
-                ctx.lineWidth = 0.6 + proximity * 0.6;
+                var lineAlpha = c.baseAlpha + proximity * 0.2;
+                ctx.strokeStyle = 'rgba(60, 140, 200, ' + lineAlpha + ')';
+                ctx.lineWidth = 0.6 + proximity * 0.8;
                 ctx.stroke();
 
-                // 节点小圆点
-                path.forEach(pt => {
-                    const d = Math.sqrt((pt.x - mouseX) ** 2 + (pt.y - mouseY) ** 2);
-                    const p = Math.max(0, 1 - d / 250);
-                    if (baseAlpha + p > 0.05) {
+                // 节点
+                for (var j = 0; j < path.length; j++) {
+                    var pt = path[j];
+                    var d = Math.sqrt((pt.x - mouseX) * (pt.x - mouseX) + (pt.y - mouseY) * (pt.y - mouseY));
+                    var p = Math.max(0, 1 - d / 300);
+                    if (c.baseAlpha + p > 0.06) {
                         ctx.beginPath();
-                        ctx.arc(pt.x, pt.y, 1.2 + p * 2, 0, Math.PI * 2);
-                        ctx.fillStyle = `rgba(80, 160, 220, ${baseAlpha * 2 + p * 0.5})`;
+                        ctx.arc(pt.x, pt.y, 1.5 + p * 2.5, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(80, 170, 230, ' + (c.baseAlpha * 2.5 + p * 0.6) + ')';
                         ctx.fill();
                     }
-                });
+                }
 
-                // 流动脉冲光点
-                const t = ((time * pulseSpeed * 0.001) + pulseOffset) % 1;
-                const pulse = getPointOnPath(path, t);
-                const pulseAlpha = 0.2 + proximity * 0.6;
+                // 脉冲光点
+                var t = ((time * c.pulseSpeed * 0.001) + c.pulseOffset) % 1;
+                var pulse = getPointOnPath(path, t);
+                var pulseAlpha = 0.3 + proximity * 0.7;
 
                 ctx.beginPath();
-                ctx.arc(pulse.x, pulse.y, 1.5 + proximity * 2, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(100, 180, 240, ${pulseAlpha})`;
+                ctx.arc(pulse.x, pulse.y, 2 + proximity * 2.5, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(100, 190, 255, ' + pulseAlpha + ')';
                 ctx.fill();
 
                 // 脉冲光晕
-                if (proximity > 0.1) {
+                if (pulseAlpha > 0.2) {
                     ctx.beginPath();
-                    ctx.arc(pulse.x, pulse.y, 4 + proximity * 6, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(80, 150, 220, ${proximity * 0.1})`;
+                    ctx.arc(pulse.x, pulse.y, 6 + proximity * 8, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(70, 150, 230, ' + (pulseAlpha * 0.12) + ')';
                     ctx.fill();
                 }
-            });
+            }
 
             requestAnimationFrame(drawCircuit);
         }
         requestAnimationFrame(drawCircuit);
 
-        // ====== 打字机启动 ======
-        setTimeout(() => {
-            typeWriter(document.getElementById('tagline'), 'South China University of Technology');
-        }, 1400);
+        // ====== 打字机效果（渐进增强） ======
+        try {
+            var taglineEl = document.getElementById('tagline');
+            var taglineText = taglineEl.textContent;
+            taglineEl.textContent = '';
 
-        // ====== 打字机 ======
-        function typeWriter(el, text) {
-            let i = 0;
-            const cursor = document.createElement('span');
-            cursor.className = 'cursor';
-            el.appendChild(cursor);
+            setTimeout(function() {
+                var i = 0;
+                var cursor = document.createElement('span');
+                cursor.className = 'cursor';
+                taglineEl.appendChild(cursor);
 
-            function type() {
-                if (i < text.length) {
-                    el.insertBefore(document.createTextNode(text[i]), cursor);
-                    i++;
-                    setTimeout(type, 50 + Math.random() * 35);
-                } else {
-                    setTimeout(() => {
-                        cursor.style.transition = 'opacity 1s';
-                        cursor.style.opacity = '0';
-                    }, 3000);
+                function type() {
+                    if (i < taglineText.length) {
+                        taglineEl.insertBefore(document.createTextNode(taglineText[i]), cursor);
+                        i++;
+                        setTimeout(type, 50 + Math.random() * 35);
+                    } else {
+                        setTimeout(function() {
+                            cursor.style.transition = 'opacity 1s';
+                            cursor.style.opacity = '0';
+                        }, 3000);
+                    }
                 }
-            }
-            type();
+                type();
+            }, 1400);
+        } catch(e) {
+            // 打字机失败时文字已在 HTML 中，不影响显示
         }
     </script>
 </body>
