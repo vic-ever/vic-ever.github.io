@@ -12,7 +12,7 @@
         }
 
         body {
-            background: #070a0e;
+            background: #09080e;
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
             height: 100vh;
@@ -26,7 +26,7 @@
             height: 600px;
             border-radius: 50%;
             pointer-events: none;
-            background: radial-gradient(circle, rgba(55, 145, 175, 0.12) 0%, rgba(45, 125, 160, 0.06) 35%, transparent 70%);
+            background: radial-gradient(circle, rgba(145, 125, 195, 0.12) 0%, rgba(130, 110, 180, 0.06) 35%, transparent 70%);
             transform: translate(-50%, -50%);
             z-index: 3;
         }
@@ -52,7 +52,7 @@
             height: 400px;
             top: 10%;
             left: 15%;
-            background: rgba(40, 120, 155, 0.06);
+            background: rgba(110, 90, 160, 0.06);
             animation: drift1 20s ease-in-out infinite;
         }
         .ambient-2 {
@@ -60,7 +60,7 @@
             height: 350px;
             bottom: 15%;
             right: 10%;
-            background: rgba(50, 130, 165, 0.05);
+            background: rgba(120, 100, 170, 0.05);
             animation: drift2 25s ease-in-out infinite;
         }
         .ambient-3 {
@@ -68,7 +68,7 @@
             height: 300px;
             top: 50%;
             left: 60%;
-            background: rgba(45, 125, 160, 0.04);
+            background: rgba(115, 95, 165, 0.04);
             animation: drift3 18s ease-in-out infinite;
         }
 
@@ -96,8 +96,8 @@
             pointer-events: none;
             z-index: 1;
             background:
-                radial-gradient(ellipse at center, transparent 35%, #070a0e 80%),
-                linear-gradient(to bottom, #070a0e 0%, transparent 10%, transparent 90%, #070a0e 100%);
+                radial-gradient(ellipse at center, transparent 35%, #09080e 80%),
+                linear-gradient(to bottom, #09080e 0%, transparent 10%, transparent 90%, #09080e 100%);
         }
 
         .main {
@@ -108,7 +108,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            padding-bottom: 22vh;
+            padding-bottom: 24vh;
             user-select: none;
         }
 
@@ -116,19 +116,19 @@
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            border: 2px solid rgba(75, 165, 195, 0.2);
+            border: 2px solid rgba(165, 148, 210, 0.2);
             margin-bottom: 2rem;
             overflow: hidden;
             opacity: 0;
             transform: scale(0.8);
-            box-shadow: 0 0 40px rgba(55, 145, 175, 0.1);
+            box-shadow: 0 0 40px rgba(145, 125, 195, 0.1);
             transition: border-color 0.4s ease, box-shadow 0.4s ease;
             animation: avatarIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
         }
 
         .avatar:hover {
-            border-color: rgba(75, 165, 195, 0.45);
-            box-shadow: 0 0 50px rgba(55, 145, 175, 0.18);
+            border-color: rgba(165, 148, 210, 0.45);
+            box-shadow: 0 0 50px rgba(145, 125, 195, 0.18);
         }
 
         @keyframes avatarIn {
@@ -144,26 +144,13 @@
             object-fit: cover;
         }
 
-        .avatar-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, rgba(28, 65, 80, 0.5), rgba(22, 50, 65, 0.5));
-            font-size: 2.2rem;
-            font-weight: 600;
-            color: rgba(100, 180, 205, 0.6);
-            letter-spacing: -0.02em;
-        }
-
         .name {
             font-size: clamp(3rem, 10vw, 7.5rem);
             font-weight: 700;
             letter-spacing: -0.03em;
             opacity: 0;
             transform: translateY(20px);
-            background: linear-gradient(90deg, rgba(220,240,248,1), rgba(120,200,230,0.95), rgba(242,250,253,1), rgba(110,195,225,0.95), rgba(220,240,248,1));
+            background: linear-gradient(90deg, rgba(230,225,248,1), rgba(175,160,225,0.95), rgba(248,245,255,1), rgba(168,152,220,0.95), rgba(230,225,248,1));
             background-size: 300% 100%;
             -webkit-background-clip: text;
             background-clip: text;
@@ -187,12 +174,12 @@
 
         @keyframes nameGlow {
             0%, 100% {
-                filter: drop-shadow(0 0 15px rgba(55, 150, 180, 0.15))
-                        drop-shadow(0 0 50px rgba(45, 135, 165, 0.06));
+                filter: drop-shadow(0 0 15px rgba(150, 130, 200, 0.15))
+                        drop-shadow(0 0 50px rgba(135, 115, 185, 0.06));
             }
             50% {
-                filter: drop-shadow(0 0 25px rgba(60, 155, 185, 0.28))
-                        drop-shadow(0 0 70px rgba(50, 140, 170, 0.12));
+                filter: drop-shadow(0 0 25px rgba(155, 135, 205, 0.28))
+                        drop-shadow(0 0 70px rgba(140, 120, 190, 0.12));
             }
         }
 
@@ -200,7 +187,7 @@
             margin-top: 1.2rem;
             font-size: clamp(0.85rem, 1.8vw, 1.05rem);
             font-weight: 300;
-            color: rgba(120, 185, 212, 0.55);
+            color: rgba(170, 155, 210, 0.55);
             letter-spacing: 0.25em;
             text-transform: uppercase;
             min-height: 1.5em;
@@ -216,7 +203,7 @@
             display: inline-block;
             width: 1px;
             height: 1.1em;
-            background: rgba(110, 175, 200, 0.5);
+            background: rgba(170, 155, 210, 0.5);
             margin-left: 2px;
             vertical-align: text-bottom;
             animation: blink 1s step-end infinite;
@@ -246,17 +233,17 @@
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            border: 1px solid rgba(110, 175, 200, 0.1);
-            color: rgba(110, 175, 200, 0.3);
+            border: 1px solid rgba(170, 155, 210, 0.1);
+            color: rgba(170, 155, 210, 0.3);
             text-decoration: none;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .socials a:hover {
-            border-color: rgba(110, 175, 200, 0.35);
-            color: rgba(200, 228, 238, 0.9);
+            border-color: rgba(170, 155, 210, 0.35);
+            color: rgba(230, 225, 248, 0.9);
             transform: translateY(-4px);
-            box-shadow: 0 0 25px rgba(55, 145, 175, 0.15);
+            box-shadow: 0 0 25px rgba(145, 125, 195, 0.15);
         }
 
         .socials a svg {
@@ -271,7 +258,7 @@
             left: 0;
             width: 100%;
             height: 1px;
-            background: linear-gradient(90deg, transparent 0%, rgba(55, 145, 175, 0.18) 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(145, 125, 195, 0.18) 50%, transparent 100%);
             z-index: 10;
         }
     </style>
@@ -307,7 +294,6 @@
     <div class="line"></div>
 
     <script>
-        // ====== 光标跟随 ======
         var glow = document.getElementById('glow');
         var mouseX = window.innerWidth / 2;
         var mouseY = window.innerHeight / 2;
@@ -328,7 +314,6 @@
         }
         animateGlow();
 
-        // ====== 电路板效果 ======
         var canvas = document.getElementById('circuit');
         var ctx = canvas.getContext('2d');
         var W, H;
@@ -437,19 +422,19 @@
             var ey = path[endInfo.seg].y + (path[endInfo.seg + 1].y - path[endInfo.seg].y) * endInfo.ratio;
             ctx.lineTo(ex, ey);
 
-            ctx.strokeStyle = 'rgba(90, 195, 225, ' + alpha + ')';
+            ctx.strokeStyle = 'rgba(175, 155, 225, ' + alpha + ')';
             ctx.lineWidth = width;
             ctx.lineCap = 'round';
             ctx.stroke();
 
             ctx.beginPath();
             ctx.arc(ex, ey, 2.5 + proximity * 2, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(120, 215, 240, ' + (alpha * 0.75) + ')';
+            ctx.fillStyle = 'rgba(195, 178, 240, ' + (alpha * 0.75) + ')';
             ctx.fill();
 
             ctx.beginPath();
             ctx.arc(ex, ey, 8 + proximity * 8, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(65, 170, 200, ' + (alpha * 0.09) + ')';
+            ctx.fillStyle = 'rgba(155, 135, 210, ' + (alpha * 0.09) + ')';
             ctx.fill();
         }
 
@@ -474,7 +459,7 @@
                     ctx.lineTo(path[i].x, path[i].y);
                 }
                 var lineAlpha = c.baseAlpha + proximity * 0.18;
-                ctx.strokeStyle = 'rgba(45, 135, 165, ' + lineAlpha + ')';
+                ctx.strokeStyle = 'rgba(130, 115, 180, ' + lineAlpha + ')';
                 ctx.lineWidth = 0.6 + proximity * 0.6;
                 ctx.lineCap = 'round';
                 ctx.stroke();
@@ -486,7 +471,7 @@
                     if (c.baseAlpha + p > 0.06) {
                         ctx.beginPath();
                         ctx.arc(pt.x, pt.y, 1.5 + p * 2.5, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(80, 180, 210, ' + (c.baseAlpha * 2.5 + p * 0.55) + ')';
+                        ctx.fillStyle = 'rgba(160, 142, 215, ' + (c.baseAlpha * 2.5 + p * 0.55) + ')';
                         ctx.fill();
                     }
                 }
@@ -509,7 +494,6 @@
         }
         requestAnimationFrame(drawCircuit);
 
-        // ====== 打字机效果 ======
         try {
             var taglineEl = document.getElementById('tagline');
             var taglineText = taglineEl.textContent;
