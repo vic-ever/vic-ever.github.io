@@ -325,39 +325,36 @@
         resize();
         window.addEventListener('resize', resize);
 
-        // ====== Hello Kitty 蝴蝶结：三个圆（左翼、右翼、中心结）======
-        // 三个圆的定义
-        var bowCircles = [];
-        var bowPaths = []; // 每个圆的采样点数组
+        // ====== Hello Kitty 蝴蝶结：倾斜椭圆 + 流动弧光 ======
+        var bowParts = [];
 
         function generateBow() {
             var cx = W / 2;
             var cy = H / 2 - H * 0.05;
-            var s = Math.min(W, H) * 0.28;
+            var unit = Math.min(W, H) * 0.22;
+            var tilt = -0.3; // 整体倾斜角度 (~17度)
 
-            // 左翼圆 - 大圆，向左偏移
-            // 右翼圆 - 大圆，向右偏移
-            // 中心结 - 小圆，居中
-            bowCircles = [
-                { x: cx - s * 0.72, y: cy, r: s * 0.62 },  // 左翼
-                { x: cx + s * 0.72, y: cy, r: s * 0.62 },  // 右翼
-                { x: cx, y: cy, r: s * 0.22 }               // 中心结
+            // 先算未倾斜的位置，再统一旋转
+            var rawParts = [
+                { ox: -unit * 0.95, oy: 0, rx: unit * 1.2, ry: unit * 0.85, localRot: -0.18, isKnot: false },
+                { ox: unit * 0.95, oy: 0, rx: unit * 1.2, ry: unit * 0.85, localRot: 0.18, isKnot: false },
+                { ox: 0, oy: 0, rx: unit * 0.35, ry: unit * 0.42, localRot: 0, isKnot: true }
             ];
 
-            // 对每个圆采样成点
-            bowPaths = [];
-            for (var c = 0; c < bowCircles.length; c++) {
-                var circle = bowCircles[c];
-                var n = c < 2 ? 80 : 40; // 大圆更多采样点
-                var pts = [];
-                for (var i = 0; i <= n; i++) {
-                    var a = (i / n) * Math.PI * 2;
-                    pts.push({
-                        x: circle.x + Math.cos(a) * circle.r,
-                        y: circle.y + Math.sin(a) * circle.r
-                    });
-                }
-                bowPaths.push(pts);
+            bowParts = [];
+            for (var i = 0; i < rawParts.length; i++) {
+                var r = rawParts[i];
+                // 绕中心旋转位置
+                var rx2 = r.ox * Math.cos(tilt) - r.oy * Math.sin(tilt);
+                var ry2 = r.ox * Math.sin(tilt) + r.oy * Math.cos(tilt);
+                bowParts.push({
+                    cx: cx + rx2,
+                    cy: cy + ry2,
+                    rx: r.rx,
+                    ry: r.ry,
+                    rot: r.localRot + tilt,
+                    isKnot: r.isKnot
+                });
             }
         }
 
@@ -367,79 +364,78 @@
             generateBow();
         });
 
+        function ellipsePoint(part, angle) {
+            var ux = Math.cos(angle) * part.rx;
+            var uy = Math.sin(angle) * part.ry;
+            return {
+                x: part.cx + ux * Math.cos(part.rot) - uy * Math.sin(part.rot),
+                y: part.cy + ux * Math.sin(part.rot) + uy * Math.cos(part.rot)
+            };
+        }
+
         function drawFrame(time) {
             ctx.clearRect(0, 0, W, H);
 
-            // 鼠标距中心距离 → 亮度增强
             var bcx = W / 2, bcy = H / 2 - H * 0.05;
             var bdist = Math.sqrt((mouseX - bcx) * (mouseX - bcx) + (mouseY - bcy) * (mouseY - bcy));
-            var bprox = Math.max(0, 1 - bdist / (Math.min(W, H) * 0.45));
+            var bprox = Math.max(0, 1 - bdist / (Math.min(W, H) * 0.5));
 
-            // 画每个圆
-            for (var c = 0; c < bowCircles.length; c++) {
-                var circle = bowCircles[c];
-                var pts = bowPaths[c];
+            ctx.lineCap = 'round';
 
-                // 基础轮廓
+            for (var p = 0; p < bowParts.length; p++) {
+                var part = bowParts[p];
+
+                // 基础轮廓描边
                 ctx.beginPath();
-                ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(150, 130, 200, ' + (0.06 + bprox * 0.04) + ')';
-                ctx.lineWidth = 1.5;
+                ctx.ellipse(part.cx, part.cy, part.rx, part.ry, part.rot, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(150, 130, 200, ' + (0.07 + bprox * 0.04) + ')';
+                ctx.lineWidth = part.isKnot ? 1.2 : 1.8;
                 ctx.stroke();
 
-                // 淡填充
+                // 极淡填充
                 ctx.beginPath();
-                ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(140, 120, 190, ' + (0.015 + bprox * 0.01) + ')';
+                ctx.ellipse(part.cx, part.cy, part.rx, part.ry, part.rot, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(140, 120, 190, ' + (0.015 + bprox * 0.008) + ')';
                 ctx.fill();
 
-                // 流动光段 - 每个圆2条光
-                for (var g = 0; g < 2; g++) {
-                    var speed = c < 2 ? 0.00008 : 0.00012;
-                    var dir = g === 0 ? 1 : -1;
-                    var offset = g * 0.5;
-                    var headAngle = (dir * time * speed + offset + c * 2.1) % 1;
-                    if (headAngle < 0) headAngle += 1;
+                // 流动弧光
+                var numGlows = part.isKnot ? 1 : 2;
+                for (var g = 0; g < numGlows; g++) {
+                    var speed = part.isKnot ? 0.0003 : 0.00018;
+                    var baseAngle = time * speed + g * Math.PI + p * 2.2;
 
-                    var trailLen = 0.15;
-                    var steps = 30;
+                    // 光尾 (长弧，淡)
+                    ctx.beginPath();
+                    ctx.ellipse(part.cx, part.cy, part.rx, part.ry, part.rot, baseAngle - Math.PI * 0.45, baseAngle);
+                    ctx.strokeStyle = 'rgba(165, 148, 225, ' + (0.08 + bprox * 0.06) + ')';
+                    ctx.lineWidth = part.isKnot ? 2 : 2.5;
+                    ctx.stroke();
 
-                    // 绘制光尾
-                    ctx.lineCap = 'round';
-                    for (var st = 0; st < steps; st++) {
-                        var ratio = st / steps;
-                        var sampleT = headAngle - dir * ratio * trailLen;
-                        sampleT = ((sampleT % 1) + 1) % 1;
+                    // 光体 (中弧，亮)
+                    ctx.beginPath();
+                    ctx.ellipse(part.cx, part.cy, part.rx, part.ry, part.rot, baseAngle - Math.PI * 0.18, baseAngle);
+                    ctx.strokeStyle = 'rgba(180, 163, 238, ' + (0.18 + bprox * 0.12) + ')';
+                    ctx.lineWidth = part.isKnot ? 2.5 : 3;
+                    ctx.stroke();
 
-                        var angle = sampleT * Math.PI * 2;
-                        var px = circle.x + Math.cos(angle) * circle.r;
-                        var py = circle.y + Math.sin(angle) * circle.r;
+                    // 光头 (短弧，最亮)
+                    ctx.beginPath();
+                    ctx.ellipse(part.cx, part.cy, part.rx, part.ry, part.rot, baseAngle - Math.PI * 0.05, baseAngle);
+                    ctx.strokeStyle = 'rgba(200, 185, 248, ' + (0.3 + bprox * 0.2) + ')';
+                    ctx.lineWidth = part.isKnot ? 3 : 3.5;
+                    ctx.stroke();
 
-                        var fade = 1 - ratio;
-                        fade = fade * fade;
-                        var alpha = fade * (0.25 + bprox * 0.18);
-                        var size = 1.5 + fade * 3;
-
-                        ctx.beginPath();
-                        ctx.arc(px, py, size, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(175, 158, 235, ' + alpha + ')';
-                        ctx.fill();
-                    }
-
-                    // 头部亮点
-                    var headA = headAngle * Math.PI * 2;
-                    var hx = circle.x + Math.cos(headA) * circle.r;
-                    var hy = circle.y + Math.sin(headA) * circle.r;
+                    // 头部亮点 + 光晕
+                    var head = ellipsePoint(part, baseAngle);
 
                     ctx.beginPath();
-                    ctx.arc(hx, hy, 3.5, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(195, 178, 245, ' + (0.35 + bprox * 0.2) + ')';
+                    ctx.arc(head.x, head.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(210, 195, 252, ' + (0.4 + bprox * 0.2) + ')';
                     ctx.fill();
 
-                    // 头部光晕
                     ctx.beginPath();
-                    ctx.arc(hx, hy, 12, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(160, 140, 220, 0.04)';
+                    ctx.arc(head.x, head.y, 14, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(160, 140, 220, 0.035)';
                     ctx.fill();
                 }
             }
