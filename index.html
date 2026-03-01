@@ -117,7 +117,7 @@
             height: 100px;
             border-radius: 50%;
             border: 2px solid rgba(165, 148, 210, 0.2);
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             overflow: hidden;
             opacity: 0;
             transform: scale(0.8);
@@ -490,8 +490,158 @@
                 }
             }
 
+            // ====== 蝴蝶结 ======
+            drawBow(time);
+
             requestAnimationFrame(drawCircuit);
         }
+
+        // 蝴蝶结路径点（归一化 0~1 坐标）
+        var bowPoints = [];
+        var bowTotalLen = 0;
+        var bowSegLens = [];
+
+        function generateBow() {
+            bowPoints = [];
+            var cx = W * 0.5;
+            var cy = H * 0.48;
+            var scaleX = Math.min(W, H) * 0.32;
+            var scaleY = Math.min(W, H) * 0.2;
+            var steps = 120;
+
+            // 左环
+            for (var i = 0; i <= steps / 2; i++) {
+                var t = (i / (steps / 2)) * Math.PI * 2;
+                var r = 0.45 + 0.15 * Math.cos(t * 2);
+                var px = cx - scaleX * r * Math.cos(t) * 0.55;
+                var py = cy + scaleY * r * Math.sin(t) * 0.7;
+                bowPoints.push({ x: px, y: py });
+            }
+
+            // 中心结
+            var knotSteps = 16;
+            for (var i = 0; i <= knotSteps; i++) {
+                var t = (i / knotSteps) * Math.PI * 2;
+                var px = cx + Math.cos(t) * scaleX * 0.06;
+                var py = cy + Math.sin(t) * scaleY * 0.12;
+                bowPoints.push({ x: px, y: py });
+            }
+
+            // 右环
+            for (var i = 0; i <= steps / 2; i++) {
+                var t = (i / (steps / 2)) * Math.PI * 2;
+                var r = 0.45 + 0.15 * Math.cos(t * 2);
+                var px = cx + scaleX * r * Math.cos(t) * 0.55;
+                var py = cy + scaleY * r * Math.sin(t) * 0.7;
+                bowPoints.push({ x: px, y: py });
+            }
+
+            // 飘带左
+            for (var i = 0; i <= 20; i++) {
+                var t = i / 20;
+                var px = cx - scaleX * 0.12 - t * scaleX * 0.25;
+                var py = cy + scaleY * 0.1 + t * scaleY * 0.55 + Math.sin(t * 3) * scaleY * 0.08;
+                bowPoints.push({ x: px, y: py });
+            }
+
+            // 回到中心
+            bowPoints.push({ x: cx, y: cy + scaleY * 0.1 });
+
+            // 飘带右
+            for (var i = 0; i <= 20; i++) {
+                var t = i / 20;
+                var px = cx + scaleX * 0.12 + t * scaleX * 0.25;
+                var py = cy + scaleY * 0.1 + t * scaleY * 0.55 + Math.sin(t * 3) * scaleY * 0.08;
+                bowPoints.push({ x: px, y: py });
+            }
+
+            // 计算段长
+            bowSegLens = [];
+            bowTotalLen = 0;
+            for (var i = 1; i < bowPoints.length; i++) {
+                var dx = bowPoints[i].x - bowPoints[i - 1].x;
+                var dy = bowPoints[i].y - bowPoints[i - 1].y;
+                var sl = Math.sqrt(dx * dx + dy * dy);
+                bowSegLens.push(sl);
+                bowTotalLen += sl;
+            }
+        }
+
+        function getBowPoint(t) {
+            var target = t * bowTotalLen;
+            for (var i = 0; i < bowSegLens.length; i++) {
+                if (target <= bowSegLens[i]) {
+                    var ratio = bowSegLens[i] > 0 ? target / bowSegLens[i] : 0;
+                    return {
+                        x: bowPoints[i].x + (bowPoints[i + 1].x - bowPoints[i].x) * ratio,
+                        y: bowPoints[i].y + (bowPoints[i + 1].y - bowPoints[i].y) * ratio
+                    };
+                }
+                target -= bowSegLens[i];
+            }
+            return bowPoints[bowPoints.length - 1];
+        }
+
+        function drawBow(time) {
+            if (bowPoints.length === 0) return;
+
+            // 基础轮廓
+            ctx.beginPath();
+            ctx.moveTo(bowPoints[0].x, bowPoints[0].y);
+            for (var i = 1; i < bowPoints.length; i++) {
+                ctx.lineTo(bowPoints[i].x, bowPoints[i].y);
+            }
+            ctx.strokeStyle = 'rgba(150, 130, 200, 0.04)';
+            ctx.lineWidth = 1.2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+
+            // 流动光效 - 3 条光带沿蝴蝶结跑
+            for (var g = 0; g < 3; g++) {
+                var headT = ((time * 0.06 * 0.001) + g * 0.33) % 1;
+                var trailLen = 0.12;
+
+                // 画发光段
+                var steps = 30;
+                for (var s = 0; s < steps; s++) {
+                    var ratio = s / steps;
+                    var sampleT = headT - ratio * trailLen;
+                    if (sampleT < 0) sampleT += 1;
+
+                    var pt = getBowPoint(sampleT);
+                    var fade = 1 - ratio;
+                    fade = fade * fade;
+                    var alpha = fade * 0.18;
+                    var size = 1.5 + fade * 2;
+
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(180, 160, 235, ' + alpha + ')';
+                    ctx.fill();
+                }
+
+                // 头部光晕
+                var head = getBowPoint(headT);
+                ctx.beginPath();
+                ctx.arc(head.x, head.y, 10, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(165, 145, 220, 0.06)';
+                ctx.fill();
+            }
+        }
+
+        // 初始化时生成蝴蝶结
+        generateBow();
+        var oldResize = resize;
+        resize = function() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            generateCircuits();
+            generateBow();
+        };
+        window.removeEventListener('resize', oldResize);
+        window.addEventListener('resize', resize);
+
         requestAnimationFrame(drawCircuit);
 
         try {
