@@ -108,7 +108,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            padding-bottom: 18vh;
+            padding-bottom: 22vh;
             user-select: none;
         }
 
@@ -163,7 +163,7 @@
             letter-spacing: -0.03em;
             opacity: 0;
             transform: translateY(20px);
-            background: linear-gradient(90deg, rgba(200,228,238,0.95), rgba(100,185,215,0.88), rgba(230,242,248,0.95), rgba(90,175,208,0.88), rgba(200,228,238,0.95));
+            background: linear-gradient(90deg, rgba(220,240,248,1), rgba(120,200,230,0.95), rgba(242,250,253,1), rgba(110,195,225,0.95), rgba(220,240,248,1));
             background-size: 300% 100%;
             -webkit-background-clip: text;
             background-clip: text;
@@ -200,7 +200,7 @@
             margin-top: 1.2rem;
             font-size: clamp(0.85rem, 1.8vw, 1.05rem);
             font-weight: 300;
-            color: rgba(110, 175, 200, 0.42);
+            color: rgba(120, 185, 212, 0.55);
             letter-spacing: 0.25em;
             text-transform: uppercase;
             min-height: 1.5em;
@@ -370,7 +370,7 @@
                     path: path,
                     pulseOffset: Math.random() * 1000,
                     pulseSpeed: 0.08 + Math.random() * 0.12,
-                    baseAlpha: 0.065 + Math.random() * 0.07,
+                    baseAlpha: 0.05 + Math.random() * 0.06,
                     totalLen: 0
                 });
             }
@@ -473,7 +473,7 @@
                 for (var i = 1; i < path.length; i++) {
                     ctx.lineTo(path[i].x, path[i].y);
                 }
-                var lineAlpha = c.baseAlpha + proximity * 0.22;
+                var lineAlpha = c.baseAlpha + proximity * 0.18;
                 ctx.strokeStyle = 'rgba(45, 135, 165, ' + lineAlpha + ')';
                 ctx.lineWidth = 0.6 + proximity * 0.6;
                 ctx.lineCap = 'round';
@@ -486,7 +486,7 @@
                     if (c.baseAlpha + p > 0.06) {
                         ctx.beginPath();
                         ctx.arc(pt.x, pt.y, 1.5 + p * 2.5, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(80, 180, 210, ' + (c.baseAlpha * 3 + p * 0.65) + ')';
+                        ctx.fillStyle = 'rgba(80, 180, 210, ' + (c.baseAlpha * 2.5 + p * 0.55) + ')';
                         ctx.fill();
                     }
                 }
@@ -494,7 +494,7 @@
                 var headT = ((time * c.pulseSpeed * 0.001) + c.pulseOffset) % 1;
                 var tailT = headT - GLOW_LENGTH;
 
-                var glowAlpha = 0.32 + proximity * 0.48;
+                var glowAlpha = 0.25 + proximity * 0.42;
                 var glowWidth = 1.5 + proximity * 1.5;
 
                 if (tailT >= 0) {
