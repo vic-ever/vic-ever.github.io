@@ -12,7 +12,7 @@
         }
 
         body {
-            background: #08070d;
+            background: #070a0d;
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
             height: 100vh;
@@ -26,7 +26,7 @@
             height: 600px;
             border-radius: 50%;
             pointer-events: none;
-            background: radial-gradient(circle, rgba(120, 70, 200, 0.12) 0%, rgba(100, 60, 180, 0.06) 35%, transparent 70%);
+            background: radial-gradient(circle, rgba(60, 140, 145, 0.1) 0%, rgba(50, 120, 130, 0.05) 35%, transparent 70%);
             transform: translate(-50%, -50%);
             z-index: 3;
         }
@@ -52,7 +52,7 @@
             height: 400px;
             top: 10%;
             left: 15%;
-            background: rgba(90, 50, 160, 0.06);
+            background: rgba(45, 115, 120, 0.05);
             animation: drift1 20s ease-in-out infinite;
         }
         .ambient-2 {
@@ -60,7 +60,7 @@
             height: 350px;
             bottom: 15%;
             right: 10%;
-            background: rgba(120, 60, 180, 0.05);
+            background: rgba(55, 125, 130, 0.04);
             animation: drift2 25s ease-in-out infinite;
         }
         .ambient-3 {
@@ -68,7 +68,7 @@
             height: 300px;
             top: 50%;
             left: 60%;
-            background: rgba(100, 50, 170, 0.04);
+            background: rgba(50, 120, 125, 0.035);
             animation: drift3 18s ease-in-out infinite;
         }
 
@@ -96,8 +96,8 @@
             pointer-events: none;
             z-index: 1;
             background:
-                radial-gradient(ellipse at center, transparent 35%, #08070d 80%),
-                linear-gradient(to bottom, #08070d 0%, transparent 10%, transparent 90%, #08070d 100%);
+                radial-gradient(ellipse at center, transparent 35%, #070a0d 80%),
+                linear-gradient(to bottom, #070a0d 0%, transparent 10%, transparent 90%, #070a0d 100%);
         }
 
         .main {
@@ -116,19 +116,19 @@
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            border: 2px solid rgba(140, 100, 210, 0.2);
+            border: 2px solid rgba(80, 155, 160, 0.18);
             margin-bottom: 2rem;
             overflow: hidden;
             opacity: 0;
             transform: scale(0.8);
-            box-shadow: 0 0 40px rgba(120, 70, 200, 0.1);
+            box-shadow: 0 0 40px rgba(60, 140, 145, 0.08);
             transition: border-color 0.4s ease, box-shadow 0.4s ease;
             animation: avatarIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
         }
 
         .avatar:hover {
-            border-color: rgba(140, 100, 210, 0.5);
-            box-shadow: 0 0 50px rgba(120, 70, 200, 0.2);
+            border-color: rgba(80, 155, 160, 0.4);
+            box-shadow: 0 0 50px rgba(60, 140, 145, 0.16);
         }
 
         @keyframes avatarIn {
@@ -150,10 +150,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, rgba(60, 40, 100, 0.5), rgba(40, 30, 70, 0.5));
+            background: linear-gradient(135deg, rgba(30, 65, 70, 0.5), rgba(25, 50, 55, 0.5));
             font-size: 2.2rem;
             font-weight: 600;
-            color: rgba(170, 140, 220, 0.6);
+            color: rgba(110, 170, 175, 0.55);
             letter-spacing: -0.02em;
         }
 
@@ -163,7 +163,7 @@
             letter-spacing: -0.03em;
             opacity: 0;
             transform: translateY(20px);
-            background: linear-gradient(90deg, rgba(215,200,245,0.95), rgba(160,120,230,0.9), rgba(240,235,255,0.95), rgba(140,100,220,0.9), rgba(215,200,245,0.95));
+            background: linear-gradient(90deg, rgba(200,225,228,0.95), rgba(110,175,180,0.85), rgba(230,240,242,0.95), rgba(100,165,170,0.85), rgba(200,225,228,0.95));
             background-size: 300% 100%;
             -webkit-background-clip: text;
             background-clip: text;
@@ -187,12 +187,12 @@
 
         @keyframes nameGlow {
             0%, 100% {
-                filter: drop-shadow(0 0 15px rgba(130, 80, 210, 0.15))
-                        drop-shadow(0 0 50px rgba(110, 60, 190, 0.06));
+                filter: drop-shadow(0 0 15px rgba(60, 145, 150, 0.12))
+                        drop-shadow(0 0 50px rgba(50, 130, 135, 0.05));
             }
             50% {
-                filter: drop-shadow(0 0 25px rgba(140, 90, 220, 0.3))
-                        drop-shadow(0 0 70px rgba(120, 70, 200, 0.12));
+                filter: drop-shadow(0 0 25px rgba(65, 150, 155, 0.25))
+                        drop-shadow(0 0 70px rgba(55, 140, 145, 0.1));
             }
         }
 
@@ -200,7 +200,7 @@
             margin-top: 1.2rem;
             font-size: clamp(0.85rem, 1.8vw, 1.05rem);
             font-weight: 300;
-            color: rgba(160, 140, 190, 0.45);
+            color: rgba(120, 165, 170, 0.4);
             letter-spacing: 0.25em;
             text-transform: uppercase;
             min-height: 1.5em;
@@ -216,7 +216,7 @@
             display: inline-block;
             width: 1px;
             height: 1.1em;
-            background: rgba(160, 140, 190, 0.5);
+            background: rgba(120, 165, 170, 0.45);
             margin-left: 2px;
             vertical-align: text-bottom;
             animation: blink 1s step-end infinite;
@@ -246,17 +246,17 @@
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            border: 1px solid rgba(160, 140, 190, 0.1);
-            color: rgba(160, 140, 190, 0.3);
+            border: 1px solid rgba(120, 165, 170, 0.09);
+            color: rgba(120, 165, 170, 0.27);
             text-decoration: none;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .socials a:hover {
-            border-color: rgba(160, 140, 190, 0.35);
-            color: rgba(215, 200, 240, 0.9);
+            border-color: rgba(120, 165, 170, 0.3);
+            color: rgba(200, 225, 228, 0.9);
             transform: translateY(-4px);
-            box-shadow: 0 0 25px rgba(120, 70, 200, 0.15);
+            box-shadow: 0 0 25px rgba(60, 140, 145, 0.12);
         }
 
         .socials a svg {
@@ -271,7 +271,7 @@
             left: 0;
             width: 100%;
             height: 1px;
-            background: linear-gradient(90deg, transparent 0%, rgba(120, 70, 200, 0.2) 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(60, 140, 145, 0.16) 50%, transparent 100%);
             z-index: 10;
         }
     </style>
@@ -370,12 +370,11 @@
                     path: path,
                     pulseOffset: Math.random() * 1000,
                     pulseSpeed: 0.08 + Math.random() * 0.12,
-                    baseAlpha: 0.05 + Math.random() * 0.06,
+                    baseAlpha: 0.045 + Math.random() * 0.05,
                     totalLen: 0
                 });
             }
 
-            // 预计算路径长度和每段长度
             for (var ci = 0; ci < circuits.length; ci++) {
                 var p = circuits[ci].path;
                 var len = 0;
@@ -390,7 +389,6 @@
             }
         }
 
-        // 计算路径上某个 t(0~1) 对应的累计距离
         function getPointOnPath(path, totalLen, t) {
             var target = t * totalLen;
             for (var i = 1; i < path.length; i++) {
@@ -407,7 +405,6 @@
             return path[path.length - 1];
         }
 
-        // 获取路径上 t 值对应的段索引和段内比例
         function getSegmentAt(path, segLens, totalLen, t) {
             var target = t * totalLen;
             for (var i = 0; i < segLens.length; i++) {
@@ -420,7 +417,6 @@
             return { seg: segLens.length - 1, ratio: 1 };
         }
 
-        // 在两个 t 值间裁剪路径并描边（发光线段效果）
         function strokeGlowSegment(path, segLens, totalLen, tStart, tEnd, alpha, width, proximity) {
             if (tStart >= tEnd) return;
 
@@ -429,22 +425,19 @@
 
             ctx.beginPath();
 
-            // 起点
             var sx = path[startInfo.seg].x + (path[startInfo.seg + 1].x - path[startInfo.seg].x) * startInfo.ratio;
             var sy = path[startInfo.seg].y + (path[startInfo.seg + 1].y - path[startInfo.seg].y) * startInfo.ratio;
             ctx.moveTo(sx, sy);
 
-            // 中间完整段的端点
             for (var i = startInfo.seg + 1; i <= endInfo.seg; i++) {
                 ctx.lineTo(path[i].x, path[i].y);
             }
 
-            // 终点
             var ex = path[endInfo.seg].x + (path[endInfo.seg + 1].x - path[endInfo.seg].x) * endInfo.ratio;
             var ey = path[endInfo.seg].y + (path[endInfo.seg + 1].y - path[endInfo.seg].y) * endInfo.ratio;
             ctx.lineTo(ex, ey);
 
-            ctx.strokeStyle = 'rgba(160, 120, 255, ' + alpha + ')';
+            ctx.strokeStyle = 'rgba(100, 185, 190, ' + alpha + ')';
             ctx.lineWidth = width;
             ctx.lineCap = 'round';
             ctx.stroke();
@@ -452,17 +445,17 @@
             // 头部光点
             ctx.beginPath();
             ctx.arc(ex, ey, 2.5 + proximity * 2, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(180, 150, 255, ' + (alpha * 0.8) + ')';
+            ctx.fillStyle = 'rgba(130, 200, 205, ' + (alpha * 0.7) + ')';
             ctx.fill();
 
             // 头部光晕
             ctx.beginPath();
             ctx.arc(ex, ey, 8 + proximity * 8, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(140, 100, 240, ' + (alpha * 0.1) + ')';
+            ctx.fillStyle = 'rgba(70, 160, 165, ' + (alpha * 0.08) + ')';
             ctx.fill();
         }
 
-        var GLOW_LENGTH = 0.2;  // 发光段占路径总长比例
+        var GLOW_LENGTH = 0.2;
 
         function drawCircuit(time) {
             ctx.clearRect(0, 0, W, H);
@@ -483,8 +476,8 @@
                 for (var i = 1; i < path.length; i++) {
                     ctx.lineTo(path[i].x, path[i].y);
                 }
-                var lineAlpha = c.baseAlpha + proximity * 0.18;
-                ctx.strokeStyle = 'rgba(110, 70, 190, ' + lineAlpha + ')';
+                var lineAlpha = c.baseAlpha + proximity * 0.16;
+                ctx.strokeStyle = 'rgba(50, 125, 130, ' + lineAlpha + ')';
                 ctx.lineWidth = 0.6 + proximity * 0.6;
                 ctx.lineCap = 'round';
                 ctx.stroke();
@@ -497,22 +490,21 @@
                     if (c.baseAlpha + p > 0.06) {
                         ctx.beginPath();
                         ctx.arc(pt.x, pt.y, 1.5 + p * 2.5, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(150, 110, 230, ' + (c.baseAlpha * 2.5 + p * 0.6) + ')';
+                        ctx.fillStyle = 'rgba(90, 165, 170, ' + (c.baseAlpha * 2.2 + p * 0.5) + ')';
                         ctx.fill();
                     }
                 }
 
-                // 发光线段：路径本身的一段变亮
+                // 发光线段
                 var headT = ((time * c.pulseSpeed * 0.001) + c.pulseOffset) % 1;
                 var tailT = headT - GLOW_LENGTH;
 
-                var glowAlpha = 0.25 + proximity * 0.45;
+                var glowAlpha = 0.22 + proximity * 0.4;
                 var glowWidth = 1.5 + proximity * 1.5;
 
                 if (tailT >= 0) {
                     strokeGlowSegment(path, c.segLens, c.totalLen, tailT, headT, glowAlpha, glowWidth, proximity);
                 } else {
-                    // 跨越起点时分两段画
                     strokeGlowSegment(path, c.segLens, c.totalLen, 0, headT, glowAlpha, glowWidth, proximity);
                     strokeGlowSegment(path, c.segLens, c.totalLen, 1 + tailT, 1, glowAlpha, glowWidth, proximity);
                 }
