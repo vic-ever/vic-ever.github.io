@@ -335,13 +335,13 @@
         // 采样路径点用于发光动画
         var hkPoints = [];
         var hkCx = 0, hkCy = 0;
-        var hkScale = 1, hkTilt = -0.12;
+        var hkScale = 1, hkTilt = 0.18;
         var maxJumpDist = 0;
 
         function computeHK() {
             hkCx = W / 2;
             hkCy = H / 2 - H * 0.03;
-            hkScale = Math.min(W, H) * 0.055;
+            hkScale = Math.min(W, H) * 0.075;
             maxJumpDist = hkScale * 0.8;
 
             hkPoints = [];
@@ -398,13 +398,13 @@
             ctx.scale(hkScale, hkScale);
             ctx.translate(-7, -7);
 
-            ctx.strokeStyle = 'rgba(150, 130, 200, ' + (0.07 + bprox * 0.03) + ')';
+            ctx.strokeStyle = 'rgba(150, 130, 200, ' + (0.10 + bprox * 0.04) + ')';
             ctx.lineWidth = 0.12;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             ctx.stroke(hkPath2D);
 
-            ctx.fillStyle = 'rgba(140, 120, 190, ' + (0.012 + bprox * 0.006) + ')';
+            ctx.fillStyle = 'rgba(140, 120, 190, ' + (0.02 + bprox * 0.01) + ')';
             ctx.fill(hkPath2D);
 
             ctx.restore();
@@ -414,27 +414,27 @@
             ctx.lineJoin = 'round';
             var totalPts = hkPoints.length;
             var headIdx = Math.floor((time * 0.04) % totalPts);
-            var glowLen = Math.floor(totalPts * 0.1);
+            var glowLen = Math.floor(totalPts * 0.18);
 
             // 尾（长、淡）
             drawGlowSeg(
                 headIdx - glowLen, glowLen,
-                'rgba(165, 148, 225, ' + (0.07 + bprox * 0.05) + ')',
-                2
+                'rgba(165, 148, 225, ' + (0.09 + bprox * 0.06) + ')',
+                2.5
             );
             // 体（中、亮）
             var bodyLen = Math.floor(glowLen * 0.4);
             drawGlowSeg(
                 headIdx - bodyLen, bodyLen,
-                'rgba(180, 163, 238, ' + (0.16 + bprox * 0.10) + ')',
-                2.5
+                'rgba(180, 163, 238, ' + (0.20 + bprox * 0.12) + ')',
+                3
             );
             // 头（短、最亮）
             var headLen = Math.max(3, Math.floor(glowLen * 0.12));
             drawGlowSeg(
                 headIdx - headLen, headLen,
-                'rgba(200, 185, 248, ' + (0.28 + bprox * 0.18) + ')',
-                3
+                'rgba(200, 185, 248, ' + (0.32 + bprox * 0.20) + ')',
+                3.5
             );
 
             // 头部亮点 + 光晕
