@@ -80,10 +80,7 @@
             transform: scale(0.8);
             box-shadow: 0 0 40px rgba(40, 120, 170, 0.1);
             transition: border-color 0.4s ease, box-shadow 0.4s ease;
-        }
-
-        .avatar.visible {
-            animation: avatarIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: avatarIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
         }
 
         .avatar:hover {
@@ -127,10 +124,7 @@
             opacity: 0;
             transform: translateY(20px);
             text-shadow: 0 0 60px rgba(50, 120, 180, 0.1);
-        }
-
-        .name.visible {
-            animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
         }
 
         @keyframes fadeUp {
@@ -150,10 +144,7 @@
             text-transform: uppercase;
             height: 1.5em;
             opacity: 0;
-        }
-
-        .tagline.visible {
-            animation: fadeIn 1s ease 0.6s forwards;
+            animation: fadeIn 1s ease 1.4s forwards;
         }
 
         @keyframes fadeIn {
@@ -406,28 +397,10 @@
         }
         requestAnimationFrame(drawCircuit);
 
-        // ====== 入场动画 ======
-        function startEntrance() {
-            setTimeout(() => {
-                document.getElementById('avatar').classList.add('visible');
-            }, 100);
-
-            setTimeout(() => {
-                document.getElementById('name').classList.add('visible');
-            }, 400);
-
-            setTimeout(() => {
-                const tagline = document.getElementById('tagline');
-                tagline.classList.add('visible');
-                typeWriter(tagline, 'South China University of Technology');
-            }, 1400);
-        }
-
-        if (document.readyState === 'complete') {
-            startEntrance();
-        } else {
-            window.addEventListener('load', startEntrance);
-        }
+        // ====== 打字机启动 ======
+        setTimeout(() => {
+            typeWriter(document.getElementById('tagline'), 'South China University of Technology');
+        }, 1400);
 
         // ====== 打字机 ======
         function typeWriter(el, text) {
