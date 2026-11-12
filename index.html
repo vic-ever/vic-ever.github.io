@@ -205,7 +205,7 @@
         .publications {
             width: min(100%, 1180px);
             margin-top: clamp(2.5rem, 6vh, 4rem);
-            text-align: center;
+            text-align: left;
             user-select: text;
         }
 
@@ -230,17 +230,17 @@
         }
 
         .publications li {
-            display: flex;
             overflow-x: auto;
             scrollbar-width: thin;
         }
 
         .publications a {
-            flex: none;
-            margin-inline: auto;
+            display: block;
+            width: max-content;
             color: rgba(230, 225, 248, 0.88);
             font-family: 'STIX Two Math', 'Cambria Math', 'Apple Symbols', serif;
             font-size: clamp(0.8rem, 1.05vw, 1rem);
+            font-weight: 400;
             line-height: 1.4;
             text-decoration: none;
             white-space: nowrap;
@@ -320,9 +320,9 @@
         <section class="publications" aria-labelledby="publications-heading">
             <h2 id="publications-heading" aria-label="Publications">Publications</h2>
             <ul>
-                <li><a href="https://arxiv.org/abs/2606.17648v2" target="_blank" rel="noopener noreferrer" aria-label="From Brewing to Resolution: Tracing the Internal Lifecycle of Code Reasoning in LLMs">𝓕𝓻𝓸𝓶 𝓑𝓻𝓮𝔀𝓲𝓷𝓰 𝓽𝓸 𝓡𝓮𝓼𝓸𝓵𝓾𝓽𝓲𝓸𝓷: 𝓣𝓻𝓪𝓬𝓲𝓷𝓰 𝓽𝓱𝓮 𝓘𝓷𝓽𝓮𝓻𝓷𝓪𝓵 𝓛𝓲𝓯𝓮𝓬𝔂𝓬𝓵𝓮 𝓸𝓯 𝓒𝓸𝓭𝓮 𝓡𝓮𝓪𝓼𝓸𝓷𝓲𝓷𝓰 𝓲𝓷 𝓛𝓛𝓜𝓼</a></li>
-                <li><a href="https://arxiv.org/abs/2609.35272" target="_blank" rel="noopener noreferrer" aria-label="When Words Speak Louder than Images: Towards Understanding Language Bias in Vision-Language Models">𝓦𝓱𝓮𝓷 𝓦𝓸𝓻𝓭𝓼 𝓢𝓹𝓮𝓪𝓴 𝓛𝓸𝓾𝓭𝓮𝓻 𝓽𝓱𝓪𝓷 𝓘𝓶𝓪𝓰𝓮𝓼: 𝓣𝓸𝔀𝓪𝓻𝓭𝓼 𝓤𝓷𝓭𝓮𝓻𝓼𝓽𝓪𝓷𝓭𝓲𝓷𝓰 𝓛𝓪𝓷𝓰𝓾𝓪𝓰𝓮 𝓑𝓲𝓪𝓼 𝓲𝓷 𝓥𝓲𝓼𝓲𝓸𝓷-𝓛𝓪𝓷𝓰𝓾𝓪𝓰𝓮 𝓜𝓸𝓭𝓮𝓵𝓼</a></li>
-                <li><a href="https://arxiv.org/abs/2607.10313" target="_blank" rel="noopener noreferrer" aria-label="Learn2Chat: Rethinking Dyadic Talking Heads via Interaction-Modulated Monologic Priors">𝓛𝓮𝓪𝓻𝓷2𝓒𝓱𝓪𝓽: 𝓡𝓮𝓽𝓱𝓲𝓷𝓴𝓲𝓷𝓰 𝓓𝔂𝓪𝓭𝓲𝓬 𝓣𝓪𝓵𝓴𝓲𝓷𝓰 𝓗𝓮𝓪𝓭𝓼 𝓿𝓲𝓪 𝓘𝓷𝓽𝓮𝓻𝓪𝓬𝓽𝓲𝓸𝓷-𝓜𝓸𝓭𝓾𝓵𝓪𝓽𝓮𝓭 𝓜𝓸𝓷𝓸𝓵𝓸𝓰𝓲𝓬 𝓟𝓻𝓲𝓸𝓻𝓼</a></li>
+                <li><a href="https://arxiv.org/abs/2606.17648v2" target="_blank" rel="noopener noreferrer" aria-label="From Brewing to Resolution: Tracing the Internal Lifecycle of Code Reasoning in LLMs">𝐹𝑟𝑜𝑚 𝐵𝑟𝑒𝑤𝑖𝑛𝑔 𝑡𝑜 𝑅𝑒𝑠𝑜𝑙𝑢𝑡𝑖𝑜𝑛: 𝑇𝑟𝑎𝑐𝑖𝑛𝑔 𝑡ℎ𝑒 𝐼𝑛𝑡𝑒𝑟𝑛𝑎𝑙 𝐿𝑖𝑓𝑒𝑐𝑦𝑐𝑙𝑒 𝑜𝑓 𝐶𝑜𝑑𝑒 𝑅𝑒𝑎𝑠𝑜𝑛𝑖𝑛𝑔 𝑖𝑛 𝐿𝐿𝑀𝑠</a></li>
+                <li><a href="https://arxiv.org/abs/2609.35272" target="_blank" rel="noopener noreferrer" aria-label="When Words Speak Louder than Images: Towards Understanding Language Bias in Vision-Language Models">𝑊ℎ𝑒𝑛 𝑊𝑜𝑟𝑑𝑠 𝑆𝑝𝑒𝑎𝑘 𝐿𝑜𝑢𝑑𝑒𝑟 𝑡ℎ𝑎𝑛 𝐼𝑚𝑎𝑔𝑒𝑠: 𝑇𝑜𝑤𝑎𝑟𝑑𝑠 𝑈𝑛𝑑𝑒𝑟𝑠𝑡𝑎𝑛𝑑𝑖𝑛𝑔 𝐿𝑎𝑛𝑔𝑢𝑎𝑔𝑒 𝐵𝑖𝑎𝑠 𝑖𝑛 𝑉𝑖𝑠𝑖𝑜𝑛-𝐿𝑎𝑛𝑔𝑢𝑎𝑔𝑒 𝑀𝑜𝑑𝑒𝑙𝑠</a></li>
+                <li><a href="https://arxiv.org/abs/2607.10313" target="_blank" rel="noopener noreferrer" aria-label="Learn2Chat: Rethinking Dyadic Talking Heads via Interaction-Modulated Monologic Priors">𝐿𝑒𝑎𝑟𝑛2𝐶ℎ𝑎𝑡: 𝑅𝑒𝑡ℎ𝑖𝑛𝑘𝑖𝑛𝑔 𝐷𝑦𝑎𝑑𝑖𝑐 𝑇𝑎𝑙𝑘𝑖𝑛𝑔 𝐻𝑒𝑎𝑑𝑠 𝑣𝑖𝑎 𝐼𝑛𝑡𝑒𝑟𝑎𝑐𝑡𝑖𝑜𝑛-𝑀𝑜𝑑𝑢𝑙𝑎𝑡𝑒𝑑 𝑀𝑜𝑛𝑜𝑙𝑜𝑔𝑖𝑐 𝑃𝑟𝑖𝑜𝑟𝑠</a></li>
             </ul>
         </section>
     </main>
