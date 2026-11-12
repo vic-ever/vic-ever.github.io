@@ -105,10 +105,10 @@
             z-index: 2;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             min-height: calc(100vh - 6rem);
-            padding: 5rem 1.5rem 3rem;
+            padding: clamp(5rem, 16vh, 10rem) 1.5rem 2rem;
             user-select: none;
         }
 
@@ -145,7 +145,7 @@
         }
 
         .name {
-            font-size: clamp(3rem, 10vw, 7.5rem);
+            font-size: clamp(2.5rem, 7vw, 5rem);
             font-weight: 700;
             letter-spacing: -0.03em;
             opacity: 0;
@@ -204,8 +204,9 @@
 
         .publications {
             width: min(100%, 1180px);
-            margin-top: clamp(2.5rem, 6vh, 4rem);
-            text-align: left;
+            margin-top: auto;
+            padding-top: clamp(4rem, 10vh, 7rem);
+            text-align: center;
             user-select: text;
         }
 
@@ -230,16 +231,17 @@
         }
 
         .publications li {
+            display: flex;
             overflow-x: auto;
             scrollbar-width: thin;
         }
 
         .publications a {
-            display: block;
-            width: max-content;
-            color: rgba(230, 225, 248, 0.88);
-            font-family: 'STIX Two Math', 'Cambria Math', 'Apple Symbols', serif;
-            font-size: clamp(0.8rem, 1.05vw, 1rem);
+            flex: none;
+            margin-inline: auto;
+            color: rgba(170, 155, 210, 0.7);
+            font-family: inherit;
+            font-size: clamp(0.8rem, 1vw, 0.95rem);
             font-weight: 400;
             line-height: 1.4;
             text-decoration: none;
@@ -320,9 +322,9 @@
         <section class="publications" aria-labelledby="publications-heading">
             <h2 id="publications-heading" aria-label="Publications">Publications</h2>
             <ul>
-                <li><a href="https://arxiv.org/abs/2606.17648v2" target="_blank" rel="noopener noreferrer" aria-label="From Brewing to Resolution: Tracing the Internal Lifecycle of Code Reasoning in LLMs">𝐹𝑟𝑜𝑚 𝐵𝑟𝑒𝑤𝑖𝑛𝑔 𝑡𝑜 𝑅𝑒𝑠𝑜𝑙𝑢𝑡𝑖𝑜𝑛: 𝑇𝑟𝑎𝑐𝑖𝑛𝑔 𝑡ℎ𝑒 𝐼𝑛𝑡𝑒𝑟𝑛𝑎𝑙 𝐿𝑖𝑓𝑒𝑐𝑦𝑐𝑙𝑒 𝑜𝑓 𝐶𝑜𝑑𝑒 𝑅𝑒𝑎𝑠𝑜𝑛𝑖𝑛𝑔 𝑖𝑛 𝐿𝐿𝑀𝑠</a></li>
-                <li><a href="https://arxiv.org/abs/2609.35272" target="_blank" rel="noopener noreferrer" aria-label="When Words Speak Louder than Images: Towards Understanding Language Bias in Vision-Language Models">𝑊ℎ𝑒𝑛 𝑊𝑜𝑟𝑑𝑠 𝑆𝑝𝑒𝑎𝑘 𝐿𝑜𝑢𝑑𝑒𝑟 𝑡ℎ𝑎𝑛 𝐼𝑚𝑎𝑔𝑒𝑠: 𝑇𝑜𝑤𝑎𝑟𝑑𝑠 𝑈𝑛𝑑𝑒𝑟𝑠𝑡𝑎𝑛𝑑𝑖𝑛𝑔 𝐿𝑎𝑛𝑔𝑢𝑎𝑔𝑒 𝐵𝑖𝑎𝑠 𝑖𝑛 𝑉𝑖𝑠𝑖𝑜𝑛-𝐿𝑎𝑛𝑔𝑢𝑎𝑔𝑒 𝑀𝑜𝑑𝑒𝑙𝑠</a></li>
-                <li><a href="https://arxiv.org/abs/2607.10313" target="_blank" rel="noopener noreferrer" aria-label="Learn2Chat: Rethinking Dyadic Talking Heads via Interaction-Modulated Monologic Priors">𝐿𝑒𝑎𝑟𝑛2𝐶ℎ𝑎𝑡: 𝑅𝑒𝑡ℎ𝑖𝑛𝑘𝑖𝑛𝑔 𝐷𝑦𝑎𝑑𝑖𝑐 𝑇𝑎𝑙𝑘𝑖𝑛𝑔 𝐻𝑒𝑎𝑑𝑠 𝑣𝑖𝑎 𝐼𝑛𝑡𝑒𝑟𝑎𝑐𝑡𝑖𝑜𝑛-𝑀𝑜𝑑𝑢𝑙𝑎𝑡𝑒𝑑 𝑀𝑜𝑛𝑜𝑙𝑜𝑔𝑖𝑐 𝑃𝑟𝑖𝑜𝑟𝑠</a></li>
+                <li><a href="https://arxiv.org/abs/2606.17648v2" target="_blank" rel="noopener noreferrer">From Brewing to Resolution: Tracing the Internal Lifecycle of Code Reasoning in LLMs</a></li>
+                <li><a href="https://arxiv.org/abs/2609.35272" target="_blank" rel="noopener noreferrer">When Words Speak Louder than Images: Towards Understanding Language Bias in Vision-Language Models</a></li>
+                <li><a href="https://arxiv.org/abs/2607.10313" target="_blank" rel="noopener noreferrer">Learn2Chat: Rethinking Dyadic Talking Heads via Interaction-Modulated Monologic Priors</a></li>
             </ul>
         </section>
     </main>
