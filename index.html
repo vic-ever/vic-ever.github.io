@@ -15,8 +15,8 @@
             background: #09080e;
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
             cursor: crosshair;
         }
 
@@ -107,8 +107,8 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            padding-bottom: 30vh;
+            min-height: calc(100vh - 6rem);
+            padding: 5rem 1.5rem 3rem;
             user-select: none;
         }
 
@@ -214,13 +214,54 @@
             50% { opacity: 0; }
         }
 
+        .publications {
+            width: min(100%, 900px);
+            margin-top: clamp(3rem, 7vh, 5rem);
+            text-align: center;
+            user-select: text;
+        }
+
+        .publications h2 {
+            margin-bottom: 1.5rem;
+            color: rgba(170, 155, 210, 0.7);
+            font-size: 0.85rem;
+            font-weight: 400;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        .publications ul {
+            list-style: none;
+        }
+
+        .publications li + li {
+            margin-top: 1.2rem;
+        }
+
+        .publications a {
+            color: rgba(230, 225, 248, 0.88);
+            font-family: 'Snell Roundhand', 'Apple Chancery', 'URW Chancery L', 'Brush Script MT', cursive;
+            font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+            font-style: italic;
+            line-height: 1.4;
+            text-decoration: none;
+            transition: color 0.25s ease, text-shadow 0.25s ease;
+        }
+
+        .publications a:hover,
+        .publications a:focus-visible {
+            color: #fff;
+            text-shadow: 0 0 20px rgba(170, 155, 210, 0.55);
+            text-decoration: underline;
+            text-underline-offset: 0.2em;
+        }
+
         .socials {
-            position: fixed;
-            bottom: 3rem;
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative;
             display: flex;
+            justify-content: center;
             gap: 2rem;
+            padding-bottom: 3rem;
             z-index: 10;
             opacity: 0;
             animation: fadeIn 1s ease 2s forwards;
@@ -272,13 +313,22 @@
     <div class="vignette"></div>
     <div class="glow" id="glow"></div>
 
-    <div class="main">
+    <main class="main">
         <div class="avatar" id="avatar">
             <img src="photo.jpg" alt="SiyueChen">
         </div>
         <h1 class="name" id="name">SiyueChen</h1>
         <div class="tagline" id="tagline">South China University of Technology</div>
-    </div>
+
+        <section class="publications" aria-labelledby="publications-heading">
+            <h2 id="publications-heading">Publications</h2>
+            <ul>
+                <li><a href="https://arxiv.org/abs/2606.17648v2" target="_blank" rel="noopener noreferrer">From Brewing to Resolution: Tracing the Internal Lifecycle of Code Reasoning in LLMs</a></li>
+                <li><a href="https://arxiv.org/abs/2609.35272" target="_blank" rel="noopener noreferrer">When Words Speak Louder than Images: Towards Understanding Language Bias in Vision-Language Models</a></li>
+                <li><a href="https://arxiv.org/abs/2607.10313" target="_blank" rel="noopener noreferrer">Learn2Chat: Rethinking Dyadic Talking Heads via Interaction-Modulated Monologic Priors</a></li>
+            </ul>
+        </section>
+    </main>
 
     <div class="socials">
         <a href="mailto:202430740144@mail.scut.edu.cn" title="Email">
