@@ -183,23 +183,11 @@
             }
         }
 
-        .tagline {
-            margin-top: 1.2rem;
-            font-size: clamp(0.85rem, 1.8vw, 1.05rem);
-            font-weight: 300;
-            color: rgba(170, 155, 210, 0.55);
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            min-height: 1.5em;
-            opacity: 0;
-            animation: fadeIn 1s ease 1.4s forwards;
-        }
-
         @keyframes fadeIn {
             to { opacity: 1; }
         }
 
-        .tagline .cursor {
+        .publications h2 .cursor {
             display: inline-block;
             width: 1px;
             height: 1.1em;
@@ -215,8 +203,8 @@
         }
 
         .publications {
-            width: min(100%, 900px);
-            margin-top: clamp(3rem, 7vh, 5rem);
+            width: min(100%, 1180px);
+            margin-top: clamp(2.5rem, 6vh, 4rem);
             text-align: center;
             user-select: text;
         }
@@ -228,6 +216,9 @@
             font-weight: 400;
             letter-spacing: 0.3em;
             text-transform: uppercase;
+            min-height: 1.5em;
+            opacity: 0;
+            animation: fadeIn 1s ease 1.4s forwards;
         }
 
         .publications ul {
@@ -238,13 +229,21 @@
             margin-top: 1.2rem;
         }
 
+        .publications li {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
         .publications a {
+            flex: none;
+            margin-inline: auto;
             color: rgba(230, 225, 248, 0.88);
-            font-family: 'Snell Roundhand', 'Apple Chancery', 'URW Chancery L', 'Brush Script MT', cursive;
-            font-size: clamp(1.25rem, 2.4vw, 1.75rem);
-            font-style: italic;
+            font-family: 'STIX Two Math', 'Cambria Math', 'Apple Symbols', serif;
+            font-size: clamp(0.8rem, 1.05vw, 1rem);
             line-height: 1.4;
             text-decoration: none;
+            white-space: nowrap;
             transition: color 0.25s ease, text-shadow 0.25s ease;
         }
 
@@ -318,14 +317,12 @@
             <img src="photo.jpg" alt="Siyue Chen">
         </div>
         <h1 class="name" id="name">Siyue Chen</h1>
-        <div class="tagline" id="tagline">South China University of Technology</div>
-
         <section class="publications" aria-labelledby="publications-heading">
-            <h2 id="publications-heading">Publications</h2>
+            <h2 id="publications-heading" aria-label="Publications">Publications</h2>
             <ul>
-                <li><a href="https://arxiv.org/abs/2606.17648v2" target="_blank" rel="noopener noreferrer">From Brewing to Resolution: Tracing the Internal Lifecycle of Code Reasoning in LLMs</a></li>
-                <li><a href="https://arxiv.org/abs/2609.35272" target="_blank" rel="noopener noreferrer">When Words Speak Louder than Images: Towards Understanding Language Bias in Vision-Language Models</a></li>
-                <li><a href="https://arxiv.org/abs/2607.10313" target="_blank" rel="noopener noreferrer">Learn2Chat: Rethinking Dyadic Talking Heads via Interaction-Modulated Monologic Priors</a></li>
+                <li><a href="https://arxiv.org/abs/2606.17648v2" target="_blank" rel="noopener noreferrer" aria-label="From Brewing to Resolution: Tracing the Internal Lifecycle of Code Reasoning in LLMs">𝓕𝓻𝓸𝓶 𝓑𝓻𝓮𝔀𝓲𝓷𝓰 𝓽𝓸 𝓡𝓮𝓼𝓸𝓵𝓾𝓽𝓲𝓸𝓷: 𝓣𝓻𝓪𝓬𝓲𝓷𝓰 𝓽𝓱𝓮 𝓘𝓷𝓽𝓮𝓻𝓷𝓪𝓵 𝓛𝓲𝓯𝓮𝓬𝔂𝓬𝓵𝓮 𝓸𝓯 𝓒𝓸𝓭𝓮 𝓡𝓮𝓪𝓼𝓸𝓷𝓲𝓷𝓰 𝓲𝓷 𝓛𝓛𝓜𝓼</a></li>
+                <li><a href="https://arxiv.org/abs/2609.35272" target="_blank" rel="noopener noreferrer" aria-label="When Words Speak Louder than Images: Towards Understanding Language Bias in Vision-Language Models">𝓦𝓱𝓮𝓷 𝓦𝓸𝓻𝓭𝓼 𝓢𝓹𝓮𝓪𝓴 𝓛𝓸𝓾𝓭𝓮𝓻 𝓽𝓱𝓪𝓷 𝓘𝓶𝓪𝓰𝓮𝓼: 𝓣𝓸𝔀𝓪𝓻𝓭𝓼 𝓤𝓷𝓭𝓮𝓻𝓼𝓽𝓪𝓷𝓭𝓲𝓷𝓰 𝓛𝓪𝓷𝓰𝓾𝓪𝓰𝓮 𝓑𝓲𝓪𝓼 𝓲𝓷 𝓥𝓲𝓼𝓲𝓸𝓷-𝓛𝓪𝓷𝓰𝓾𝓪𝓰𝓮 𝓜𝓸𝓭𝓮𝓵𝓼</a></li>
+                <li><a href="https://arxiv.org/abs/2607.10313" target="_blank" rel="noopener noreferrer" aria-label="Learn2Chat: Rethinking Dyadic Talking Heads via Interaction-Modulated Monologic Priors">𝓛𝓮𝓪𝓻𝓷2𝓒𝓱𝓪𝓽: 𝓡𝓮𝓽𝓱𝓲𝓷𝓴𝓲𝓷𝓰 𝓓𝔂𝓪𝓭𝓲𝓬 𝓣𝓪𝓵𝓴𝓲𝓷𝓰 𝓗𝓮𝓪𝓭𝓼 𝓿𝓲𝓪 𝓘𝓷𝓽𝓮𝓻𝓪𝓬𝓽𝓲𝓸𝓷-𝓜𝓸𝓭𝓾𝓵𝓪𝓽𝓮𝓭 𝓜𝓸𝓷𝓸𝓵𝓸𝓰𝓲𝓬 𝓟𝓻𝓲𝓸𝓻𝓼</a></li>
             </ul>
         </section>
     </main>
@@ -501,19 +498,19 @@
         requestAnimationFrame(drawFrame);
 
         try {
-            var taglineEl = document.getElementById('tagline');
-            var taglineText = taglineEl.textContent;
-            taglineEl.textContent = '';
+            var headingEl = document.getElementById('publications-heading');
+            var headingText = headingEl.textContent;
+            headingEl.textContent = '';
 
             setTimeout(function() {
                 var i = 0;
                 var cursor = document.createElement('span');
                 cursor.className = 'cursor';
-                taglineEl.appendChild(cursor);
+                headingEl.appendChild(cursor);
 
                 function type() {
-                    if (i < taglineText.length) {
-                        taglineEl.insertBefore(document.createTextNode(taglineText[i]), cursor);
+                    if (i < headingText.length) {
+                        headingEl.insertBefore(document.createTextNode(headingText[i]), cursor);
                         i++;
                         setTimeout(type, 50 + Math.random() * 35);
                     } else {
